@@ -5,63 +5,9 @@ import { Input } from "@/components/ui/input"
 import { ArrowRight, ShieldCheck, Truck, Users, Heart, Star, ShoppingBag } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { db } from "@/lib/db"
-import { formatCurrency, getBestSellingProducts } from "@/lib/utils"
-import connectDB from "@/lib/mongodb"
-import getSettingsModel from "@/lib/models/Settings"
-
-// Function to get featured product settings from database
-async function getFeaturedProductSettings() {
-  try {
-    // Connect to MongoDB
-    await connectDB();
-    
-    // Get the Settings model
-    const SettingsModel = getSettingsModel();
-    
-    // Find settings by key
-    const settings = await SettingsModel.findOne({ key: "featuredProducts" });
-    
-    if (settings && settings.value) {
-      return settings.value;
-    } else {
-      return { featuredProductIds: [] };
-    }
-  } catch (error) {
-    console.error("Error reading featured products settings:", error);
-    return { featuredProductIds: [] };
-  }
-}
+import { formatCurrency } from "@/lib/utils"
 
 export default async function Home() {
-  // Fetch all products and orders
-  const allProducts = await db.getProducts();
-  const allOrders = await db.getOrders();
-  
-  // Get manually set featured products
-  const featuredSettings = await getFeaturedProductSettings();
-  const featuredProductIds = featuredSettings.featuredProductIds || [];
-  
-  // If manual featured products exist, use those
-  let displayProducts = [];
-  
-  if (featuredProductIds.length > 0) {
-    // Get featured products based on manual selection
-    displayProducts = allProducts.filter(product => 
-      featuredProductIds.includes(product.id)
-    );
-    
-    // Preserve the order specified in the settings
-    displayProducts.sort((a, b) => {
-      return featuredProductIds.indexOf(a.id) - featuredProductIds.indexOf(b.id);
-    });
-  } else {
-    // Fallback to best sellers if no manual selections exist
-    displayProducts = getBestSellingProducts(allOrders, allProducts, 4);
-  }
-  
-  // Limit to 4 products
-  displayProducts = displayProducts.slice(0, 4);
-  
   return (
     <div className="flex min-h-screen flex-col">
       <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur-md shadow-sm">
@@ -79,12 +25,6 @@ export default async function Home() {
             </Link>
             <Link href="/store" className="flex items-center text-sm font-medium text-muted-foreground hover:text-pink-600">
               Shop
-            </Link>
-            <Link href="/about" className="flex items-center text-sm font-medium text-muted-foreground hover:text-pink-600">
-              About
-            </Link>
-            <Link href="/contact" className="flex items-center text-sm font-medium text-muted-foreground hover:text-pink-600">
-              Contact
             </Link>
           </nav>
           
@@ -231,171 +171,85 @@ export default async function Home() {
           </div>
         </section>
         
-        {/* Featured Products Section */}
-        <section className="w-full py-20 bg-gradient-to-br from-gray-50 to-white">
-          <div className="container px-4 md:px-6">
-            <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
-              <Badge className="mb-2 bg-pink-100 text-pink-800 hover:bg-pink-200 px-3 py-1">
-                {featuredProductIds.length > 0 ? "Featured Products" : "Best Sellers"}
-              </Badge>
-              <h2 className="text-3xl font-bold tracking-tighter md:text-4xl">
-                {featuredProductIds.length > 0 ? "Our Curated Selection" : "Our Most Popular Products"}
-              </h2>
-              <p className="max-w-[800px] text-muted-foreground">
-                {featuredProductIds.length > 0 
-                  ? "Discover our specially selected beauty essentials handpicked for you"
-                  : "Discover our customers' favorites and top-selling beauty essentials"
-                }
-              </p>
-            </div>
-            
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {displayProducts.map((product) => (
-                <div key={product.id} className="group relative overflow-hidden rounded-xl bg-white shadow-md hover:shadow-lg transition-all">
-                  <Link href={`/store/products/${product.id}`}>
-                    <div className="aspect-square overflow-hidden">
-                      {product.image ? (
-                        <Image
-                          src={product.image}
-                          alt={product.name}
-                          width={400}
-                          height={400}
-                          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-                        />
-                      ) : (
-                        <div className="flex h-full items-center justify-center bg-gradient-to-br from-pink-100 to-purple-100">
-                          <ShoppingBag className="h-16 w-16 text-pink-300" />
-                        </div>
-                      )}
-                    </div>
-                  </Link>
-                  <div className="absolute top-2 right-2">
-                    <Button variant="ghost" size="icon" className="rounded-full bg-white/80 backdrop-blur-sm hover:bg-white">
-                      <Heart className="h-4 w-4 text-pink-600" />
-                    </Button>
-                  </div>
-                  <div className="p-4">
-                    <Badge className="mb-2 bg-pink-100 text-pink-800">{product.category}</Badge>
-                    <h3 className="font-semibold">{product.name}</h3>
-                    <div className="flex items-center gap-2 mt-1">
-                      <div className="flex">
-                        {[1, 2, 3, 4, 5].map((star) => (
-                          <Star key={star} className="h-4 w-4 fill-current text-yellow-400" />
-                        ))}
-                      </div>
-                      <span className="text-xs text-muted-foreground">
-                        {featuredProductIds.includes(product.id) ? "Featured" : "Best Seller"}
-                      </span>
-                    </div>
-                    <div className="mt-2 flex items-center justify-between">
-                      <span className="font-semibold">{formatCurrency(product.price)}</span>
-                      <Link href={`/store/products/${product.id}`}>
-                        <Button size="sm" className="bg-pink-600 hover:bg-pink-700 text-white">
-                          View Product
-                        </Button>
-                      </Link>
-                    </div>
-                  </div>
+        <section className="border-t border-gray-200 bg-white">
+          <div className="container px-4 md:px-6 py-12">
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+              <div className="flex flex-col items-center text-center space-y-2">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-pink-100">
+                  <ShoppingBag className="h-5 w-5 text-pink-600" />
                 </div>
-              ))}
+                <h3 className="font-medium">Free Shipping</h3>
+                <p className="text-sm text-muted-foreground">On orders over $50</p>
             </div>
             
-            <div className="mt-12 flex justify-center">
-              <Link href="/store/products">
-                <Button variant="outline" className="gap-2 border-pink-200 text-pink-700 hover:bg-pink-50">
-                  View All Products <ArrowRight className="h-4 w-4" />
-                </Button>
-              </Link>
+              <div className="flex flex-col items-center text-center space-y-2">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-pink-100">
+                  <ShieldCheck className="h-5 w-5 text-pink-600" />
+                        </div>
+                <h3 className="font-medium">Secure Payment</h3>
+                <p className="text-sm text-muted-foreground">100% secure transactions</p>
+                    </div>
+              
+              <div className="flex flex-col items-center text-center space-y-2">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-pink-100">
+                  <Star className="h-5 w-5 text-pink-600" />
+                </div>
+                <h3 className="font-medium">Quality Guarantee</h3>
+                <p className="text-sm text-muted-foreground">Tested and approved</p>
+            </div>
+            
+              <div className="flex flex-col items-center text-center space-y-2">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-pink-100">
+                  <Heart className="h-5 w-5 text-pink-600" />
+                </div>
+                <h3 className="font-medium">Customer Support</h3>
+                <p className="text-sm text-muted-foreground">24/7 dedicated support</p>
+              </div>
             </div>
           </div>
         </section>
       </main>
-      
-      <footer className="border-t py-8 bg-gray-50">
-        <div className="container px-4 mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div>
-              <h3 className="text-lg font-semibold mb-4">GlamStore</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Premium beauty products curated for your unique style.
-              </p>
-              <div className="flex space-x-4">
-                <a href="#" className="text-muted-foreground hover:text-pink-600">
-                  <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path fillRule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clipRule="evenodd" />
-                  </svg>
-                </a>
-                <a href="#" className="text-muted-foreground hover:text-pink-600">
-                  <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
-                  </svg>
-                </a>
-                <a href="#" className="text-muted-foreground hover:text-pink-600">
-                  <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path fillRule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" clipRule="evenodd" />
-                  </svg>
-                </a>
-              </div>
-            </div>
-            
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
+      <footer className="w-full py-6 bg-gradient-to-br from-pink-50 to-purple-50 border-t">
+        <div className="container px-4 md:px-6">
+          <div className="grid gap-10 sm:grid-cols-2 md:grid-cols-4">
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-pink-600">About</h3>
               <ul className="space-y-2">
-                <li>
-                  <Link href="/" className="text-sm text-muted-foreground hover:text-pink-600">
-                    Home
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/store" className="text-sm text-muted-foreground hover:text-pink-600">
-                    Shop
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/about" className="text-sm text-muted-foreground hover:text-pink-600">
-                    About
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/contact" className="text-sm text-muted-foreground hover:text-pink-600">
-                    Contact
-                  </Link>
-                </li>
+                <li><Link href="#" className="text-sm text-muted-foreground hover:text-pink-600">Our Story</Link></li>
+                <li><Link href="#" className="text-sm text-muted-foreground hover:text-pink-600">Careers</Link></li>
+                <li><Link href="#" className="text-sm text-muted-foreground hover:text-pink-600">Press</Link></li>
+              </ul>
+              </div>
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-pink-600">Help</h3>
+              <ul className="space-y-2">
+                <li><Link href="#" className="text-sm text-muted-foreground hover:text-pink-600">FAQ</Link></li>
+                <li><Link href="#" className="text-sm text-muted-foreground hover:text-pink-600">Shipping</Link></li>
+                <li><Link href="#" className="text-sm text-muted-foreground hover:text-pink-600">Returns</Link></li>
               </ul>
             </div>
-            
-            <div>
-              <h3 className="text-lg font-semibold mb-4">Newsletter</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Subscribe to our newsletter for the latest updates and offers.
-              </p>
-              <form className="flex space-x-2">
-                <Input 
-                  type="email" 
-                  placeholder="Your email" 
-                  className="rounded-l-md" 
-                />
-                <Button type="submit" className="bg-pink-600 hover:bg-pink-700 text-white">
-                  Subscribe
-                </Button>
-              </form>
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-pink-600">Contact</h3>
+              <ul className="space-y-2">
+                <li><p className="text-sm text-muted-foreground">Email: support@glamstore.com</p></li>
+                <li><p className="text-sm text-muted-foreground">Phone: +1 (555) 123-4567</p></li>
+              </ul>
+            </div>
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-pink-600">Newsletter</h3>
+              <p className="text-sm text-muted-foreground">Subscribe for updates on new products and special promotions.</p>
+              <div className="flex space-x-2">
+                <Input type="email" placeholder="Your email" className="max-w-[200px]" />
+                <Button size="sm" className="bg-pink-600 hover:bg-pink-700 text-white">Subscribe</Button>
+              </div>
             </div>
           </div>
-          
-          <div className="border-t mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
-            <p className="text-sm text-muted-foreground mb-4 md:mb-0">
-              © {new Date().getFullYear()} GlamStore. All rights reserved.
-            </p>
-            <div className="flex space-x-6">
-              <Link href="/terms" className="text-sm text-muted-foreground hover:text-pink-600">
-                Terms
-              </Link>
-              <Link href="/privacy" className="text-sm text-muted-foreground hover:text-pink-600">
-                Privacy
-              </Link>
-              <Link href="/contact" className="text-sm text-muted-foreground hover:text-pink-600">
-                Contact
-              </Link>
+          <div className="mt-8 border-t pt-6 flex flex-col sm:flex-row justify-between items-center">
+            <p className="text-sm text-muted-foreground mb-4 sm:mb-0">© 2023 GlamStore. All rights reserved.</p>
+            <div className="flex items-center space-x-3">
+              <Link href="#" className="text-muted-foreground hover:text-foreground"><span className="sr-only">Instagram</span>{/* Instagram icon */}</Link>
+              <Link href="#" className="text-muted-foreground hover:text-foreground"><span className="sr-only">Twitter</span>{/* Twitter icon */}</Link>
+              <Link href="#" className="text-muted-foreground hover:text-foreground"><span className="sr-only">Facebook</span>{/* Facebook icon */}</Link>
             </div>
           </div>
         </div>

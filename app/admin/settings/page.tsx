@@ -5,10 +5,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { CategoryManagement } from "./_components/category-management"
 import { CarouselManagement } from "./_components/carousel-management"
-import { FeaturedProductsManagement } from "./_components/featured-products-management"
 
 export default function SettingsPage() {
-  const [activeTab, setActiveTab] = useState("featured")
+  const [activeTab, setActiveTab] = useState("categories")
   
   return (
     <div className="p-6 space-y-6">
@@ -22,24 +21,9 @@ export default function SettingsPage() {
         className="space-y-4"
       >
         <TabsList>
-          <TabsTrigger value="featured">Featured</TabsTrigger>
           <TabsTrigger value="categories">Categories</TabsTrigger>
           <TabsTrigger value="carousel">Carousel</TabsTrigger>
         </TabsList>
-        
-        <TabsContent value="featured" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Featured Products Management</CardTitle>
-              <CardDescription>
-                Select which products should be featured on the home page.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <FeaturedProductsManagement />
-            </CardContent>
-          </Card>
-        </TabsContent>
         
         <TabsContent value="categories" className="space-y-4">
           <Card>

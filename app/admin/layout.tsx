@@ -90,16 +90,18 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                 <span className="sr-only">Toggle menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-64 p-0">
-              <SheetHeader className="p-4 border-b">
+            <SheetContent side="left" className="w-64 p-0 flex flex-col">
+              <SheetHeader className="p-4 border-b shrink-0">
                 <SheetTitle>
                   <Link href="/admin" className="flex items-center font-semibold">
                     <span className="text-xl bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">GlamStore Admin</span>
                   </Link>
                 </SheetTitle>
               </SheetHeader>
-              <div className="flex flex-col h-full">
-                <nav className="flex-1 overflow-auto p-2">
+              
+              {/* Mobile sidebar content with flex layout */}
+              <div className="flex-1 overflow-y-auto">
+                <nav className="p-2">
                   {sidebarItems.map((item) => {
                     const isActive = pathname === item.href || (pathname && pathname.startsWith(`${item.href}/`));
                     return (
@@ -119,35 +121,37 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                     );
                   })}
                 </nav>
-                <div className="border-t p-4 space-y-2">
-                  {/* Dark Mode Toggle for Mobile */}
-                  <MobileThemeToggle />
-                  
-                  {/* View Store Button */}
+              </div>
+              
+              {/* Mobile bottom buttons - fixed at bottom */}
+              <div className="border-t p-4 space-y-2 shrink-0">
+                {/* Dark Mode Toggle for Mobile */}
+                <MobileThemeToggle />
+                
+                {/* View Store Button */}
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="w-full justify-start text-muted-foreground hover:text-foreground"
+                  asChild
+                >
+                  <Link href="/store">
+                    <ChevronRight className="mr-2 h-4 w-4" />
+                    <span>View Store</span>
+                  </Link>
+                </Button>
+                
+                {/* Sign Out Button */}
+                <SignOutButton>
                   <Button 
                     variant="ghost" 
                     size="sm" 
-                    className="w-full justify-start text-muted-foreground hover:text-foreground"
-                    asChild
+                    className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-500 dark:hover:bg-red-950"
                   >
-                    <Link href="/store">
-                      <ChevronRight className="mr-2 h-4 w-4" />
-                      <span>View Store</span>
-                    </Link>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Sign Out</span>
                   </Button>
-                  
-                  {/* Sign Out Button */}
-                  <SignOutButton>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-500 dark:hover:bg-red-950"
-                    >
-                      <LogOut className="mr-2 h-4 w-4" />
-                      <span>Sign Out</span>
-                    </Button>
-                  </SignOutButton>
-                </div>
+                </SignOutButton>
               </div>
             </SheetContent>
           </Sheet>
@@ -165,15 +169,18 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
       </header>
 
       <div className="flex flex-1 overflow-hidden">
-        {/* Desktop sidebar */}
-        <aside className="hidden lg:block w-64 border-r shrink-0 h-screen sticky top-0">
-          <div className="flex flex-col h-full">
-            <div className="h-16 border-b flex items-center px-6">
-              <Link href="/admin" className="font-semibold text-xl bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
-                GlamStore Admin
-              </Link>
-            </div>
-            <nav className="flex-1 overflow-auto p-3">
+        {/* Desktop sidebar - fixed layout */}
+        <aside className="hidden lg:block w-64 border-r h-screen sticky top-0 flex flex-col">
+          {/* Sidebar header */}
+          <div className="h-16 border-b flex items-center px-6 shrink-0">
+            <Link href="/admin" className="font-semibold text-xl bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
+              GlamStore Admin
+            </Link>
+          </div>
+          
+          {/* Main navigation - scrollable */}
+          <div className="flex-1 overflow-y-auto">
+            <nav className="p-3">
               {sidebarItems.map((item) => {
                 const isActive = pathname === item.href || (pathname && pathname.startsWith(`${item.href}/`));
                 return (
@@ -194,29 +201,31 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                 );
               })}
             </nav>
-            <div className="border-t p-4">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex-1 truncate">
-                  <p className="text-sm font-medium">{user.fullName || user.username}</p>
-                  <p className="text-xs text-muted-foreground truncate">{user.primaryEmailAddress?.emailAddress}</p>
-                </div>
-                <UserButton afterSignOutUrl="/sign-in" />
+          </div>
+          
+          {/* User info and action buttons - fixed at bottom */}
+          <div className="border-t p-4 shrink-0">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex-1 truncate">
+                <p className="text-sm font-medium">{user.fullName || user.username}</p>
+                <p className="text-xs text-muted-foreground truncate">{user.primaryEmailAddress?.emailAddress}</p>
               </div>
-              <div className="space-y-2">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="w-full justify-start text-muted-foreground"
-                  asChild
-                >
-                  <Link href="/store">
-                    <ChevronRight className="mr-2 h-4 w-4" />
-                    <span>View Store</span>
-                  </Link>
-                </Button>
-                
-                <SidebarThemeToggle />
-              </div>
+              <UserButton afterSignOutUrl="/sign-in" />
+            </div>
+            <div className="space-y-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="w-full justify-start text-muted-foreground"
+                asChild
+              >
+                <Link href="/store">
+                  <ChevronRight className="mr-2 h-4 w-4" />
+                  <span>View Store</span>
+                </Link>
+              </Button>
+              
+              <SidebarThemeToggle />
             </div>
           </div>
         </aside>
