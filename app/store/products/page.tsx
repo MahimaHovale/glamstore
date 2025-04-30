@@ -10,6 +10,7 @@ import { Slider } from "@/components/ui/slider"
 import { ShoppingBag, Search, SlidersHorizontal, Heart, Filter, X, Check, Award } from "lucide-react"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { Separator } from "@/components/ui/separator"
+import ProductCard from "@/components/store/product-card"
 
 export default async function ProductsPage({ searchParams }: { searchParams: { category?: string, search?: string, bestSellers?: string } }) {
   // Safely access searchParams - ensure it's properly awaited
@@ -229,59 +230,30 @@ export default async function ProductsPage({ searchParams }: { searchParams: { c
               </div>
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-              {filteredProducts.map((product) => (
-                <Card key={product.id} className="group overflow-hidden transition-all duration-300 hover:shadow-lg border-muted">
-                  <Link href={`/store/products/${product.id}`}>
-                    <div className="relative aspect-square overflow-hidden">
-                      <Image
-                        src={formatImageUrl(product.image)}
-                        alt={product.name}
-                        fill
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                        className="object-cover transition-transform duration-500 group-hover:scale-110"
-                      />
-                      {showBestSellers && bestSellerIds.includes(product.id) && (
-                        <div className="absolute top-2 left-2 bg-pink-600 text-white px-2 py-1 rounded-full text-xs font-medium z-10">
-                          Best Seller
-                        </div>
-                      )}
-                      <Button size="icon" variant="ghost" className="absolute top-2 right-2 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-white/20">
-                        <Heart className="h-5 w-5" />
-                      </Button>
-                    </div>
-                  </Link>
-                  <CardContent className="p-4">
-                    <div className="space-y-1">
-                      <Badge variant="outline" className="font-normal text-xs text-muted-foreground">
-                        {product.category}
-                      </Badge>
-                      <h3 className="font-medium text-lg line-clamp-1">{product.name}</h3>
-                      <p className="text-sm text-muted-foreground line-clamp-2">{product.description}</p>
-                    </div>
-                  </CardContent>
-                  <CardFooter className="p-4 pt-0 flex items-center justify-between">
-                    <p className="font-semibold text-lg">{formatCurrency(product.price)}</p>
-                    <Button size="sm" className="rounded-full bg-pink-500 hover:bg-pink-600 text-white">
-                      <ShoppingBag className="h-4 w-4 mr-1" /> Add
-                    </Button>
-                  </CardFooter>
-                </Card>
-              ))}
+            {/* Product grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredProducts.length > 0 ? (
+                <>
+                  {filteredProducts.map((product) => (
+                    <ProductCard 
+                      key={product.id} 
+                      product={product} 
+                      isBestSeller={bestSellerIds.includes(product.id)}
+                    />
+                  ))}
+                </>
+              ) : (
+                <div className="col-span-full flex flex-col items-center justify-center py-12 text-center">
+                  <div className="rounded-full bg-muted p-6 mb-4">
+                    <Filter className="h-10 w-10 text-muted-foreground" />
+                  </div>
+                  <h3 className="text-xl font-semibold">No products found</h3>
+                  <p className="text-muted-foreground mt-2 max-w-md">
+                    We couldn't find any products matching your criteria. Try adjusting your filters or search term.
+                  </p>
+                </div>
+              )}
             </div>
-            
-            {filteredProducts.length === 0 && (
-              <div className="flex flex-col items-center justify-center py-12 text-center">
-                <ShoppingBag className="h-12 w-12 text-muted-foreground mb-4" />
-                <h3 className="text-lg font-medium mb-2">No products found</h3>
-                <p className="text-muted-foreground mb-6">
-                  We couldn't find any products matching your criteria.
-                </p>
-                <Link href="/store/products">
-                  <Button variant="outline">View All Products</Button>
-                </Link>
-              </div>
-            )}
           </div>
         </div>
       </div>

@@ -6,6 +6,7 @@ import { db } from "@/lib/db"
 import { formatCurrency, formatImageUrl } from "@/lib/utils"
 import { Minus, Plus, ShoppingCart, Heart, Share2, Star, ArrowLeft, Truck, Shield, RotateCcw } from "lucide-react"
 import AddToCartButton from "./_components/add-to-cart-button"
+import AddToWishlistButton from "./_components/add-to-wishlist-button"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
@@ -73,13 +74,9 @@ export default async function ProductPage({ params }: { params: { id: string } }
               priority
               className="object-cover"
             />
-            <Button 
-              size="icon" 
-              variant="ghost" 
-              className="absolute top-4 right-4 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white"
-            >
-              <Heart className="h-5 w-5 text-pink-500" />
-            </Button>
+            <div className="absolute top-4 right-4">
+              <AddToWishlistButton product={product} variant="icon" />
+            </div>
           </div>
           
           {/* Thumbnail images - could be expanded with actual thumbnails */}
@@ -144,10 +141,7 @@ export default async function ProductPage({ params }: { params: { id: string } }
           {/* Add to cart button */}
           <div className="flex flex-col sm:flex-row gap-4 pt-2">
             <AddToCartButton product={product} />
-            <Button variant="outline" size="lg" className="gap-2">
-              <Heart className="h-5 w-5" />
-              Add to Wishlist
-            </Button>
+            <AddToWishlistButton product={product} variant="outline" />
           </div>
           
           {/* Shipping and returns */}
