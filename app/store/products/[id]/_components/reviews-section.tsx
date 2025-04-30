@@ -82,17 +82,11 @@ export function ReviewsSection({ productId }: { productId: string }) {
     setIsSubmitting(true)
     
     try {
-      // Verify authentication token
-      try {
-        const token = await getToken();
-        if (!token) {
-          throw new Error("Authentication token is missing");
-        }
-      } catch (tokenError) {
-        console.error("Token verification failed:", tokenError);
+      // Check if user is signed in
+      if (!isSignedIn || !user) {
         toast({
           title: "Authentication Error",
-          description: "Your session may have expired. Please sign in again.",
+          description: "You must be signed in to submit a review.",
           variant: "destructive"
         });
         setIsSubmitting(false);
@@ -100,40 +94,62 @@ export function ReviewsSection({ productId }: { productId: string }) {
       }
       
       console.log("Submitting review:", { productId, rating, comment })
-      const response = await fetch(`/api/products/${productId}/reviews`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          rating,
-          comment,
-          userName: user.fullName || user.firstName || 'Anonymous'
-        })
-      })
       
-      let errorData;
+      let responseData;
       try {
-        // Try to parse the JSON response, but handle the case when it's empty
-        const contentType = response.headers.get("content-type");
-        if (contentType && contentType.includes("application/json")) {
-          errorData = await response.json();
-        } else {
-          // If not JSON, get text
-          const text = await response.text();
-          errorData = { error: text || "Unknown error (empty response)" };
+        // Make the fetch request
+        console.log("Making fetch request to submit review...");
+        const response = await fetch(`/api/products/${productId}/reviews`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            rating,
+            comment,
+            userName: user.fullName || user.firstName || 'Anonymous',
+            userId: user.id // Include the user ID in the request
+          })
+        });
+        
+        console.log("Response received - status:", response.status);
+        console.log("Response headers:", Object.fromEntries([...response.headers.entries()]));
+        
+        // Parse the response
+        try {
+          // Try to parse the JSON response, but handle the case when it's empty
+          const contentType = response.headers.get("content-type");
+          console.log("Response content type:", contentType);
+          
+          if (contentType && contentType.includes("application/json")) {
+            console.log("Parsing JSON response...");
+            responseData = await response.json();
+            console.log("Parsed JSON response:", responseData);
+          } else {
+            // If not JSON, get text
+            console.log("Response is not JSON, getting text...");
+            const text = await response.text();
+            console.log("Response text:", text || "[empty response]");
+            responseData = { error: text || "Unknown error (empty response)" };
+          }
+        } catch (parseError) {
+          console.error("Error parsing response:", parseError);
+          responseData = { error: "Could not parse error response" };
         }
-      } catch (parseError) {
-        console.error("Error parsing response:", parseError);
-        errorData = { error: "Could not parse error response" };
+        
+        // Check if the request was successful
+        if (!response.ok) {
+          console.error("Review submission error:", responseData);
+          const errorMessage = responseData?.error || responseData?.details || `Server error: ${response.status}`;
+          console.error("Error message:", errorMessage);
+          throw new Error(errorMessage);
+        }
+        
+        console.log("Review submission successful:", responseData);
+      } catch (fetchError) {
+        console.error("Error during review submission:", fetchError);
+        throw fetchError;
       }
-      
-      if (!response.ok) {
-        console.error("Review submission error:", errorData);
-        throw new Error(errorData?.error || errorData?.details || `Server error: ${response.status}`);
-      }
-      
-      console.log("Review submission successful:", errorData);
       
       toast({
         title: userReview ? "Review updated" : "Review submitted",
