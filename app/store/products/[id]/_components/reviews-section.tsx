@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useUser } from "@clerk/nextjs"
+import { useUser, useAuth } from "@clerk/nextjs"
 import { Button } from "@/components/ui/button"
 import { Star, Check, AlertCircle } from "lucide-react"
 import { 
@@ -17,61 +17,59 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/hooks/use-toast"
 import { cn } from "@/lib/utils"
-
-// Type definitions for reviews
-interface Review {
-  id: string
-  productId: string
-  userId: string
-  userName: string
-  rating: number
-  comment: string
-  date: string
-  verified: boolean
-}
-
-// Mock reviews storage until we have a real backend
-const REVIEWS_STORAGE_KEY = "product_reviews"
-
-const saveReviews = (reviews: Review[]) => {
-  if (typeof window !== 'undefined') {
-    localStorage.setItem(REVIEWS_STORAGE_KEY, JSON.stringify(reviews))
-  }
-}
-
-const getReviews = (): Review[] => {
-  if (typeof window !== 'undefined') {
-    const saved = localStorage.getItem(REVIEWS_STORAGE_KEY)
-    return saved ? JSON.parse(saved) : []
-  }
-  return []
-}
+import { Review } from "@/lib/db"
 
 export function ReviewsSection({ productId }: { productId: string }) {
   const { user, isSignedIn } = useUser()
+  const { getToken } = useAuth()
   const { toast } = useToast()
   const [reviews, setReviews] = useState<Review[]>([])
   const [userReview, setUserReview] = useState<Review | null>(null)
   const [rating, setRating] = useState(5)
   const [comment, setComment] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const [dialogOpen, setDialogOpen] = useState(false)
+  
+  // Fetch reviews from API
+  const fetchReviews = async () => {
+    try {
+      setIsLoading(true)
+      const response = await fetch(`/api/products/${productId}/reviews`)
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch reviews')
+      }
+      
+      const data = await response.json()
+      setReviews(data.reviews || [])
+      
+      // Check if user has already reviewed this product
+      if (isSignedIn && user) {
+        const existingReview = data.reviews.find((review: Review) => review.userId === user.id)
+        if (existingReview) {
+          setUserReview(existingReview)
+          setRating(existingReview.rating)
+          setComment(existingReview.comment)
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching reviews:', error)
+      toast({
+        title: "Error",
+        description: "Could not load reviews. Please try again later.",
+        variant: "destructive"
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
   
   useEffect(() => {
-    const allReviews = getReviews()
-    const productReviews = allReviews.filter(review => review.productId === productId)
-    setReviews(productReviews)
-    
-    if (isSignedIn && user) {
-      const existingReview = productReviews.find(review => review.userId === user.id)
-      if (existingReview) {
-        setUserReview(existingReview)
-        setRating(existingReview.rating)
-        setComment(existingReview.comment)
-      }
-    }
-  }, [productId, isSignedIn, user])
+    fetchReviews()
+  }, [productId, isSignedIn, user?.id])
   
-  const handleSubmitReview = () => {
+  const handleSubmitReview = async () => {
     if (!isSignedIn || !user) {
       toast({
         title: "Sign in required",
@@ -84,51 +82,75 @@ export function ReviewsSection({ productId }: { productId: string }) {
     setIsSubmitting(true)
     
     try {
-      const allReviews = getReviews()
-      
-      // Create or update review
-      const newReview: Review = {
-        id: userReview?.id || `review_${Date.now()}`,
-        productId,
-        userId: user.id,
-        userName: user.fullName || user.firstName || 'Anonymous',
-        rating,
-        comment,
-        date: new Date().toISOString(),
-        verified: true // For demo purposes, all reviews are verified
+      // Verify authentication token
+      try {
+        const token = await getToken();
+        if (!token) {
+          throw new Error("Authentication token is missing");
+        }
+      } catch (tokenError) {
+        console.error("Token verification failed:", tokenError);
+        toast({
+          title: "Authentication Error",
+          description: "Your session may have expired. Please sign in again.",
+          variant: "destructive"
+        });
+        setIsSubmitting(false);
+        return;
       }
       
-      let updatedReviews: Review[]
+      console.log("Submitting review:", { productId, rating, comment })
+      const response = await fetch(`/api/products/${productId}/reviews`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          rating,
+          comment,
+          userName: user.fullName || user.firstName || 'Anonymous'
+        })
+      })
       
-      if (userReview) {
-        // Update existing review
-        updatedReviews = allReviews.map(r => 
-          r.id === userReview.id ? newReview : r
-        )
-        toast({
-          title: "Review updated",
-          description: "Your review has been updated successfully",
-        })
-      } else {
-        // Add new review
-        updatedReviews = [...allReviews, newReview]
-        toast({
-          title: "Review submitted",
-          description: "Your review has been submitted successfully",
-        })
+      let errorData;
+      try {
+        // Try to parse the JSON response, but handle the case when it's empty
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          errorData = await response.json();
+        } else {
+          // If not JSON, get text
+          const text = await response.text();
+          errorData = { error: text || "Unknown error (empty response)" };
+        }
+      } catch (parseError) {
+        console.error("Error parsing response:", parseError);
+        errorData = { error: "Could not parse error response" };
       }
       
-      saveReviews(updatedReviews)
+      if (!response.ok) {
+        console.error("Review submission error:", errorData);
+        throw new Error(errorData?.error || errorData?.details || `Server error: ${response.status}`);
+      }
       
-      // Update local state
-      const productReviews = updatedReviews.filter(review => review.productId === productId)
-      setReviews(productReviews)
-      setUserReview(newReview)
+      console.log("Review submission successful:", errorData);
+      
+      toast({
+        title: userReview ? "Review updated" : "Review submitted",
+        description: userReview ? "Your review has been updated successfully" : "Your review has been submitted successfully"
+      })
+      
+      // Close the dialog
+      setDialogOpen(false)
+      
+      // Refresh the reviews list
+      fetchReviews()
       
     } catch (error) {
+      console.error('Error submitting review:', error);
       toast({
         title: "Error",
-        description: "There was an error submitting your review",
+        description: error instanceof Error ? error.message : "Failed to submit review",
         variant: "destructive"
       })
     } finally {
@@ -141,7 +163,7 @@ export function ReviewsSection({ productId }: { productId: string }) {
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-medium">Customer Reviews</h3>
         
-        <Dialog>
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
             <Button className="bg-pink-600 hover:bg-pink-700 text-white">
               {userReview ? "Edit Your Review" : "Write a Review"}
@@ -203,15 +225,13 @@ export function ReviewsSection({ productId }: { productId: string }) {
                       Cancel
                     </Button>
                   </DialogClose>
-                  <DialogClose asChild>
-                    <Button 
-                      onClick={handleSubmitReview} 
-                      disabled={isSubmitting || !comment}
-                      className="bg-pink-600 hover:bg-pink-700 text-white"
-                    >
-                      {userReview ? "Update Review" : "Submit Review"}
-                    </Button>
-                  </DialogClose>
+                  <Button 
+                    onClick={handleSubmitReview} 
+                    disabled={isSubmitting || !comment}
+                    className="bg-pink-600 hover:bg-pink-700 text-white"
+                  >
+                    {isSubmitting ? "Submitting..." : (userReview ? "Update Review" : "Submit Review")}
+                  </Button>
                 </DialogFooter>
               </>
             )}
@@ -219,7 +239,11 @@ export function ReviewsSection({ productId }: { productId: string }) {
         </Dialog>
       </div>
       
-      {reviews.length > 0 ? (
+      {isLoading ? (
+        <div className="text-center py-6">
+          <p className="text-muted-foreground">Loading reviews...</p>
+        </div>
+      ) : reviews.length > 0 ? (
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {reviews.map((review) => (
@@ -247,7 +271,7 @@ export function ReviewsSection({ productId }: { productId: string }) {
                 </div>
                 <p className="text-sm mb-2">{review.comment}</p>
                 <p className="text-xs text-muted-foreground">
-                  Posted on {new Date(review.date).toLocaleDateString()}
+                  Posted on {new Date(review.createdAt).toLocaleDateString()}
                 </p>
               </div>
             ))}
@@ -266,17 +290,34 @@ export function ReviewsSection({ productId }: { productId: string }) {
 export function ProductRating({ productId }: { productId: string }) {
   const [reviews, setReviews] = useState<Review[]>([])
   const [averageRating, setAverageRating] = useState(0)
+  const [isLoading, setIsLoading] = useState(true)
   
   useEffect(() => {
-    const allReviews = getReviews()
-    const productReviews = allReviews.filter(review => review.productId === productId)
-    setReviews(productReviews)
-    
-    if (productReviews.length > 0) {
-      const total = productReviews.reduce((sum, review) => sum + review.rating, 0)
-      setAverageRating(total / productReviews.length)
+    const fetchRatingData = async () => {
+      try {
+        setIsLoading(true)
+        const response = await fetch(`/api/products/${productId}/reviews`)
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch reviews')
+        }
+        
+        const data = await response.json()
+        setReviews(data.reviews || [])
+        setAverageRating(data.averageRating || 0)
+      } catch (error) {
+        console.error('Error fetching review ratings:', error)
+      } finally {
+        setIsLoading(false)
+      }
     }
+    
+    fetchRatingData()
   }, [productId])
+  
+  if (isLoading) {
+    return null // Don't show anything while loading
+  }
   
   return (
     <div className="flex items-center">
@@ -286,7 +327,7 @@ export function ProductRating({ productId }: { productId: string }) {
             key={star} 
             className={cn(
               "h-4 w-4",
-              star <= Math.round(averageRating) ? "fill-amber-500" : "text-gray-300"
+              star <= Math.round(averageRating) ? "fill-current" : "text-gray-300"
             )}
           />
         ))}

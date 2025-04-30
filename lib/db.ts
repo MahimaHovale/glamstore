@@ -13,8 +13,21 @@ type ProductModelType = Model<ProductDocument>;
 type UserModelType = Model<UserDocument>; 
 type OrderModelType = Model<OrderDocument>;
 type CategoryModelType = Model<CategoryDocument>;
+type ReviewModelType = Model<ReviewDocument>;
 
 // Type definitions for client-side code
+export type Review = {
+  id: string;
+  productId: string;
+  userId: string;
+  userName: string;
+  rating: number;
+  comment: string;
+  verified: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export type Product = {
   id: string;
   name: string;
@@ -24,6 +37,8 @@ export type Product = {
   image: string;
   imageCid?: string; // Optional field to store Pinata CID
   stock: number;
+  reviews?: Review[];
+  averageRating?: number;
 }
 
 export type Category = {
@@ -118,6 +133,17 @@ export interface UserDocument extends Document {
   clerkId?: string; // Optional Clerk user ID
 }
 
+export interface ReviewDocument extends Document {
+  productId: mongoose.Types.ObjectId;
+  userId: string;
+  userName: string;
+  rating: number;
+  comment: string;
+  verified: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 // Fallback data in case of errors
 const fallbackProducts: Product[] = [
   {
@@ -160,18 +186,87 @@ const fallbackOrders: Order[] = [
 ];
 
 // Helper functions to convert MongoDB documents to client-side types
+function convertReview(doc: any): Review | null {
+  if (!doc) return null;
+  
+  try {
+    // Safely extract and convert the productId
+    let productIdStr = '';
+    if (doc.productId) {
+      if (typeof doc.productId === 'string') {
+        productIdStr = doc.productId;
+      } else if (doc.productId.toString) {
+        // Handle ObjectId or other objects with toString method
+        productIdStr = doc.productId.toString();
+      } else if (doc.productId._id) {
+        // Handle case where productId might be an object with _id
+        productIdStr = typeof doc.productId._id === 'string' 
+          ? doc.productId._id 
+          : doc.productId._id.toString();
+      }
+    }
+    
+    return {
+      id: doc._id?.toString() || '',
+      productId: productIdStr,
+      userId: doc.userId || '',
+      userName: doc.userName || '',
+      rating: Number(doc.rating) || 0,
+      comment: doc.comment || '',
+      verified: Boolean(doc.verified),
+      createdAt: doc.createdAt instanceof Date 
+        ? doc.createdAt.toISOString() 
+        : (typeof doc.createdAt === 'string' ? doc.createdAt : new Date().toISOString()),
+      updatedAt: doc.updatedAt instanceof Date 
+        ? doc.updatedAt.toISOString() 
+        : (typeof doc.updatedAt === 'string' ? doc.updatedAt : new Date().toISOString())
+    };
+  } catch (error) {
+    console.error("Error converting review document:", error, "Document:", doc);
+    return null;
+  }
+}
+
 function convertProduct(doc: any): Product | null {
   if (!doc) return null;
-  return {
-    id: doc._id?.toString(),
-    name: doc.name || '',
-    description: doc.description || '',
-    price: doc.price || 0,
-    category: doc.category || '',
-    image: doc.image || '',
-    imageCid: doc.imageCid || undefined,
-    stock: doc.stock || 0
-  };
+  
+  try {
+    const reviews = Array.isArray(doc.reviews) 
+      ? doc.reviews.map((reviewDoc: any) => convertReview(reviewDoc)).filter(Boolean)
+      : [];
+      
+    // Calculate average rating if reviews exist
+    let averageRating: number | undefined = undefined;
+    if (reviews.length > 0) {
+      const total = reviews.reduce((sum: number, review: Review | null) => sum + (review?.rating || 0), 0);
+      averageRating = total / reviews.length;
+    }
+    
+    return {
+      id: doc._id?.toString(),
+      name: doc.name || '',
+      description: doc.description || '',
+      price: doc.price || 0,
+      category: doc.category || '',
+      image: doc.image || '',
+      imageCid: doc.imageCid || undefined,
+      stock: doc.stock || 0,
+      reviews: reviews.length > 0 ? reviews : undefined,
+      averageRating
+    };
+  } catch (error) {
+    console.error("Error converting product document:", error, "Document:", doc);
+    return {
+      id: doc._id?.toString(),
+      name: doc.name || '',
+      description: doc.description || '',
+      price: doc.price || 0,
+      category: doc.category || '',
+      image: doc.image || '',
+      imageCid: doc.imageCid || undefined,
+      stock: doc.stock || 0
+    };
+  }
 }
 
 function convertOrder(doc: any): Order | null {
@@ -249,15 +344,10 @@ const serverDb = {
       const products = await ProductModel.find().lean();
       console.log(`Found ${products.length} products in MongoDB`);
       
-      const convertedProducts = products.map((p: any) => {
-        const converted = convertProduct(p);
-        return converted ? converted : null;
-      }).filter((p: any) => p !== null) as Product[];
-      
-      console.log(`Converted ${convertedProducts.length} products`);
-      return convertedProducts;
+      // Return converted products
+      return products.map(product => convertProduct(product)).filter(Boolean) as Product[];
     } catch (error) {
-      console.error("Error fetching products:", error);
+      console.error('Error fetching products from MongoDB:', error);
       return fallbackProducts;
     }
   },
@@ -265,11 +355,40 @@ const serverDb = {
   getProduct: async (id: string): Promise<Product | null> => {
     try {
       await connectDB();
+      console.log(`Fetching product ${id} from MongoDB...`);
+      // Import the model dynamically only on the server
       const { default: ProductModel } = await import('./models/Product') as { default: ProductModelType };
+      
+      // Use the product model to find the product by ID
       const product = await ProductModel.findById(id).lean();
-      return product ? convertProduct(product) : null;
+      
+      if (!product) {
+        console.log(`Product ${id} not found in MongoDB`);
+        return null;
+      }
+      
+      // Convert to our Product type which can have reviews
+      const productData: any = { ...product };
+      
+      // For individual products, fetch reviews separately instead of using populate
+      if (mongoose.Types.ObjectId.isValid(id)) {
+        try {
+          const { default: ReviewModel } = await import('./models/Review') as { default: ReviewModelType };
+          const reviews = await ReviewModel.find({ 
+            productId: new mongoose.Types.ObjectId(id)
+          }).sort({ createdAt: -1 }).lean();
+          
+          // Add reviews to the product object
+          productData.reviews = reviews;
+        } catch (reviewError) {
+          console.error(`Error fetching reviews for product ${id}:`, reviewError);
+          // Continue without reviews if there's an error
+        }
+      }
+      
+      return convertProduct(productData);
     } catch (error) {
-      console.error("Error fetching product:", error);
+      console.error(`Error fetching product ${id} from MongoDB:`, error);
       return null;
     }
   },
@@ -909,6 +1028,121 @@ const serverDb = {
       throw error;
     }
   },
+
+  // Reviews
+  getProductReviews: async (productId: string): Promise<Review[]> => {
+    try {
+      await connectDB();
+      console.log(`Fetching reviews for product ${productId} from MongoDB...`);
+      // Import the models dynamically only on the server
+      const { default: ReviewModel } = await import('./models/Review') as { default: ReviewModelType };
+      
+      // Make sure productId is a valid ObjectId
+      if (!mongoose.Types.ObjectId.isValid(productId)) {
+        console.error(`Invalid productId: ${productId}`);
+        return [];
+      }
+      
+      const reviews = await ReviewModel.find({ 
+        productId: new mongoose.Types.ObjectId(productId) 
+      }).sort({ createdAt: -1 }).lean();
+      
+      console.log(`Found ${reviews.length} reviews for product ${productId}`);
+      
+      return reviews.map(review => convertReview(review)).filter(Boolean) as Review[];
+    } catch (error) {
+      console.error(`Error fetching reviews for product ${productId}:`, error);
+      return [];
+    }
+  },
+  
+  createReview: async (
+    productId: string, 
+    userId: string, 
+    userName: string, 
+    rating: number, 
+    comment: string, 
+    verified: boolean = false
+  ): Promise<Review | null> => {
+    try {
+      await connectDB();
+      console.log(`Creating review for product ${productId}, userId: ${userId}`);
+      
+      // Import the models dynamically only on the server
+      const { default: ReviewModel } = await import('./models/Review') as { default: ReviewModelType };
+      const { default: ProductModel } = await import('./models/Product') as { default: ProductModelType };
+      
+      // Make sure productId is a valid ObjectId
+      if (!mongoose.Types.ObjectId.isValid(productId)) {
+        console.error(`Invalid productId: ${productId}`);
+        return null;
+      }
+      
+      // Check if product exists
+      const productObjectId = new mongoose.Types.ObjectId(productId);
+      const product = await ProductModel.findById(productObjectId);
+      if (!product) {
+        console.error(`Product ${productId} not found`);
+        return null;
+      }
+      
+      // Check if user already has a review for this product
+      let existingReview = null;
+      try {
+        existingReview = await ReviewModel.findOne({ 
+          productId: productObjectId,
+          userId
+        });
+        console.log("Existing review check result:", existingReview ? "Found" : "Not found");
+      } catch (findError) {
+        console.error("Error finding existing review:", findError);
+      }
+      
+      let result = null;
+      if (existingReview) {
+        try {
+          // Update existing review
+          existingReview.rating = rating;
+          existingReview.comment = comment;
+          existingReview.userName = userName;
+          existingReview.verified = verified;
+          
+          const updatedReview = await existingReview.save();
+          console.log(`Updated existing review for product ${productId}`);
+          
+          result = convertReview(updatedReview.toObject());
+        } catch (updateError) {
+          console.error("Error updating review:", updateError);
+          throw updateError;
+        }
+      } else {
+        try {
+          // Create new review
+          const newReview = new ReviewModel({
+            productId: productObjectId,
+            userId,
+            userName,
+            rating,
+            comment,
+            verified
+          });
+          
+          const savedReview = await newReview.save();
+          console.log(`Created new review for product ${productId}`);
+          
+          result = convertReview(savedReview.toObject());
+        } catch (createError) {
+          console.error("Error creating new review:", createError);
+          throw createError;
+        }
+      }
+      
+      return result;
+    } catch (error) {
+      console.error(`Error creating/updating review for product ${productId}:`, error);
+      throw error; // Re-throw the error instead of returning null
+    }
+  },
 }
 
 // Create a client-side database interface with mock data
@@ -1063,5 +1297,103 @@ const clientDb = {
   },
 }
 
-// Export the appropriate database interface based on the environment
-export const db = isServer ? serverDb : clientDb;
+// Export the DB interface based on the environment
+export const db = isServer ? serverDb : {
+  // Client-side implementations
+  getProducts: async () => {
+    try {
+      const response = await fetch('/api/products');
+      if (!response.ok) {
+        throw new Error('Failed to fetch products');
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      return fallbackProducts;
+    }
+  },
+  
+  getProduct: async (id: string) => {
+    try {
+      const response = await fetch(`/api/products/${id}`);
+      if (!response.ok) {
+        return null;
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error fetching product:', error);
+      return null;
+    }
+  },
+  
+  // Reviews - Client-side implementations
+  getProductReviews: async (productId: string) => {
+    try {
+      const response = await fetch(`/api/products/${productId}/reviews`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch reviews');
+      }
+      const data = await response.json();
+      return data.reviews || [];
+    } catch (error) {
+      console.error('Error fetching reviews:', error);
+      return [];
+    }
+  },
+  
+  createReview: async (
+    productId: string, 
+    userId: string, 
+    userName: string, 
+    rating: number, 
+    comment: string, 
+    verified: boolean = false
+  ) => {
+    try {
+      const response = await fetch(`/api/products/${productId}/reviews`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          userId,
+          userName,
+          rating,
+          comment,
+          verified
+        })
+      });
+      
+      if (!response.ok) {
+        return null;
+      }
+      
+      const data = await response.json();
+      return data.review;
+    } catch (error) {
+      console.error('Error creating review:', error);
+      return null;
+    }
+  },
+  
+  // Other client-side functions would be implemented similarly
+  updateProduct: async () => { throw new Error('Not implemented on client side'); },
+  deleteProduct: async () => { throw new Error('Not implemented on client side'); },
+  // ... other stubs for admin operations
+  getUsers: async () => [],
+  getUser: async () => null,
+  addUser: async () => null,
+  updateUser: async () => null,
+  deleteUser: async () => null,
+  getOrders: async () => [],
+  getOrder: async () => null,
+  addOrder: async () => null,
+  updateOrder: async () => null,
+  deleteOrder: async () => null,
+  updateProductStock: async () => null,
+  getCategories: async () => [],
+  getCategory: async () => null,
+  createCategory: async () => null,
+  updateCategory: async () => null,
+  deleteCategory: async () => null,
+};

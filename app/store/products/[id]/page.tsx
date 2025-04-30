@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
 import ProductCard from "@/components/store/product-card"
 import { ReviewsSection, ProductRating } from "./_components/reviews-section"
+import StockDisplay from "./_components/stock-display"
 
 export default async function ProductPage({ params }: { params: { id: string } }) {
   // Ensure params.id is properly awaited and used correctly
@@ -108,7 +109,7 @@ export default async function ProductPage({ params }: { params: { id: string } }
               <Badge variant="outline" className="text-xs font-normal text-muted-foreground">
                 {product.category}
               </Badge>
-              <div className="flex items-center text-amber-500">
+              <div className="flex items-center">
                 <ProductRating productId={product.id} />
               </div>
             </div>
@@ -119,23 +120,8 @@ export default async function ProductPage({ params }: { params: { id: string } }
 
           <p className="text-muted-foreground">{product.description}</p>
           
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <Badge 
-                variant={product.stock > 0 ? "outline" : "destructive"} 
-                className={`px-2 py-1 ${product.stock > 0 ? "border-green-500 text-green-700 bg-green-50" : ""}`}
-              >
-                {product.stock > 0 ? "In Stock" : "Out of Stock"}
-              </Badge>
-              {product.stock > 0 && (
-                <span className="text-sm text-muted-foreground">
-                  {product.stock} {product.stock === 1 ? "unit" : "units"} available
-                </span>
-              )}
-            </div>
-            
-            {/* Quantity selector is now handled by the AddToCartButton component */}
-          </div>
+          {/* Live Stock Display Component */}
+          <StockDisplay product={product} refreshInterval={30000} />
 
           {/* Add to cart button */}
           <div className="flex flex-col sm:flex-row gap-4 pt-2">
@@ -230,7 +216,7 @@ export default async function ProductPage({ params }: { params: { id: string } }
                   </div>
                   <div className="grid grid-cols-2 gap-2 border-b pb-2">
                     <span className="text-muted-foreground">Stock</span>
-                    <span>{product.stock} {product.stock === 1 ? "unit" : "units"}</span>
+                    <StockDisplay product={product} refreshInterval={0} />
                   </div>
                 </div>
               </div>

@@ -47,6 +47,7 @@ export async function POST(request: Request) {
     }));
     
     let orderTotal = 0;
+    const productsToUpdate = [];
     
     try {
       // Ensure database connection is established
@@ -65,8 +66,24 @@ export async function POST(request: Request) {
           }, { status: 404 });
         }
         
+        // Check if we have enough stock
+        if (product.stock < item.quantity) {
+          console.error(`Not enough stock for product ${product.name}. Requested: ${item.quantity}, Available: ${product.stock}`);
+          return NextResponse.json({
+            error: `Not enough stock for product ${product.name}. Only ${product.stock} units available.`
+          }, { status: 400 });
+        }
+        
         console.log(`Product verified: ${product.name}, price: ${product.price}, quantity: ${item.quantity}`);
         orderTotal += product.price * item.quantity;
+        
+        // Store product info for stock update later
+        productsToUpdate.push({
+          id: product.id,
+          name: product.name,
+          currentStock: product.stock,
+          orderQuantity: item.quantity
+        });
       }
       
       console.log(`Order total calculated: ${orderTotal}`);
@@ -99,9 +116,29 @@ export async function POST(request: Request) {
       const order = await db.createOrder(orderData);
       console.log('Order created successfully:', order.id);
       
+      // Update product stock after successful order creation
+      console.log('Updating product stock...');
+      
+      const stockUpdatePromises = productsToUpdate.map(async (product) => {
+        const newStock = Math.max(0, product.currentStock - product.orderQuantity);
+        console.log(`Updating stock for ${product.name}: ${product.currentStock} -> ${newStock}`);
+        
+        try {
+          await db.updateProduct(product.id, { stock: newStock });
+          return { success: true, productId: product.id };
+        } catch (updateError) {
+          console.error(`Failed to update stock for product ${product.id}:`, updateError);
+          return { success: false, productId: product.id, error: updateError };
+        }
+      });
+      
+      // Wait for all stock updates to complete
+      const stockUpdateResults = await Promise.all(stockUpdatePromises);
+      console.log('Stock update results:', stockUpdateResults);
+      
       return NextResponse.json({
         success: true,
-        message: "Order created successfully",
+        message: "Order created successfully and stock updated",
         order
       }, { status: 201 });
     } catch (orderError) {
