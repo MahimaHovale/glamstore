@@ -179,7 +179,7 @@ export default async function Home() {
                   <ShoppingBag className="h-5 w-5 text-pink-600" />
                 </div>
                 <h3 className="font-medium">Free Shipping</h3>
-                <p className="text-sm text-muted-foreground">On orders over $50</p>
+                <p className="text-sm text-muted-foreground">On orders over Rs50</p>
             </div>
             
               <div className="flex flex-col items-center text-center space-y-2">

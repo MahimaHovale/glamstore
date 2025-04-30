@@ -2,7 +2,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { redirect } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { db } from "@/lib/db"
+import { db, Product } from "@/lib/db"
 import { formatCurrency, formatImageUrl } from "@/lib/utils"
 import { Minus, Plus, ShoppingCart, Heart, Share2, Star, ArrowLeft, Truck, Shield, RotateCcw } from "lucide-react"
 import AddToCartButton from "./_components/add-to-cart-button"
@@ -32,7 +32,7 @@ export default async function ProductPage({ params }: { params: { id: string } }
   // Get related products (same category)
   const allProducts = await db.getProducts();
   const relatedProducts = allProducts
-    .filter(p => p.category === product.category && p.id !== product.id)
+    .filter((p: Product) => p.category === product.category && p.id !== product.id)
     .slice(0, 4);
 
   return (
@@ -133,7 +133,7 @@ export default async function ProductPage({ params }: { params: { id: string } }
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
             <div className="flex items-center gap-2">
               <Truck className="h-5 w-5 text-muted-foreground" />
-              <span className="text-sm">Free shipping over $50</span>
+              <span className="text-sm">Free shipping over Rs50</span>
             </div>
             <div className="flex items-center gap-2">
               <Shield className="h-5 w-5 text-muted-foreground" />
@@ -241,7 +241,7 @@ export default async function ProductPage({ params }: { params: { id: string } }
         <div className="mt-20">
           <h2 className="text-2xl font-bold mb-6">You may also like</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {relatedProducts.map((product) => (
+            {relatedProducts.map((product: Product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>

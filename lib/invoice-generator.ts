@@ -43,7 +43,7 @@ export const generateInvoiceHTML = (order: any) => {
   }, 0);
   
   const shippingCost = 0; // You can add shipping cost calculation here
-  const taxRate = 0.18; // 18% GST
+  const taxRate = 0; // No GST
   const taxAmount = subtotal * taxRate;
   const total = subtotal + taxAmount + shippingCost;
   
@@ -197,7 +197,6 @@ export const generateInvoiceHTML = (order: any) => {
         
         <div class="totals">
           <div>Subtotal: ${formatCurrency(subtotal)}</div>
-          <div>GST (18%): ${formatCurrency(taxAmount)}</div>
           <div>Shipping: ${formatCurrency(shippingCost)}</div>
           <div class="grand-total">Total: ${formatCurrency(total)}</div>
         </div>
