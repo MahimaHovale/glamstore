@@ -71,7 +71,7 @@ export function StoreLayout({ children }: StoreLayoutProps) {
             </div>
 
             {/* Desktop Navigation - Centered */}
-            <nav className="hidden md:flex items-center justify-center absolute left-1/2 transform -translate-x-1/2 space-x-12">
+            <nav className="hidden md:flex items-center justify-center space-x-12 flex-1 ml-24">
               {navigation.map((item) => (
                 <Link
                   key={item.name}
@@ -89,22 +89,59 @@ export function StoreLayout({ children }: StoreLayoutProps) {
             </nav>
 
             {/* Desktop Actions */}
-            <div className="hidden md:flex items-center space-x-4">
-              <form className="relative" onSubmit={(e) => {
-                e.preventDefault();
-                const searchInput = e.currentTarget.querySelector('input');
-                if (searchInput && searchInput.value.trim()) {
-                  router.push(`/store/products?search=${encodeURIComponent(searchInput.value.trim())}`);
-                }
-              }}>
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input 
-                  type="search" 
-                  name="search"
-                  placeholder="Search products..." 
-                  className="w-[200px] pl-8 rounded-full border-muted focus:border-pink-300 focus:ring-pink-200 dark:border-gray-700 dark:focus:border-pink-800 dark:focus:ring-pink-900" 
-                />
-              </form>
+            <div className="hidden md:flex items-center space-x-4 z-20">
+              <div className="relative">
+                <form className="hidden lg:block" onSubmit={(e) => {
+                  e.preventDefault();
+                  const searchInput = e.currentTarget.querySelector('input');
+                  if (searchInput && searchInput.value.trim()) {
+                    router.push(`/store/products?search=${encodeURIComponent(searchInput.value.trim())}`);
+                  }
+                }}>
+                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input 
+                    type="search" 
+                    name="search"
+                    placeholder="Search products..." 
+                    className="w-[200px] pl-8 rounded-full border-muted focus:border-pink-300 focus:ring-pink-200 dark:border-gray-700 dark:focus:border-pink-800 dark:focus:ring-pink-900" 
+                  />
+                </form>
+                <Sheet>
+                  <SheetTrigger asChild className="lg:hidden">
+                    <Button variant="ghost" size="icon">
+                      <Search className="h-5 w-5" />
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="top" className="w-full">
+                    <SheetHeader className="space-y-4">
+                      <SheetTitle asChild>
+                        <h2>Search Products</h2>
+                      </SheetTitle>
+                      <form onSubmit={(e) => {
+                        e.preventDefault();
+                        const searchInput = e.currentTarget.querySelector('input');
+                        if (searchInput && searchInput.value.trim()) {
+                          router.push(`/store/products?search=${encodeURIComponent(searchInput.value.trim())}`);
+                          const closeButton = document.querySelector('[data-sheet-close]');
+                          if (closeButton && closeButton instanceof HTMLElement) {
+                            closeButton.click();
+                          }
+                        }
+                      }}>
+                        <div className="relative">
+                          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                          <Input 
+                            type="search" 
+                            name="search"
+                            placeholder="Search products..." 
+                            className="w-full pl-8 rounded-full" 
+                          />
+                        </div>
+                      </form>
+                    </SheetHeader>
+                  </SheetContent>
+                </Sheet>
+              </div>
               
               <Link href="/store/wishlist">
                 <Button variant="ghost" size="icon" className="relative">
@@ -175,13 +212,13 @@ export function StoreLayout({ children }: StoreLayoutProps) {
                     <Menu className="h-6 w-6" />
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="right" className="w-[80vw] sm:w-[350px] p-0">
-                  <SheetHeader className="border-b p-4">
-                    <SheetTitle className="text-left">Menu</SheetTitle>
+                <SheetContent side="right" className="w-[80vw] sm:w-[350px] p-0 flex flex-col">
+                  <SheetHeader className="border-b p-4 flex items-center justify-center">
+                    <SheetTitle className="text-xl font-bold">Menu</SheetTitle>
                   </SheetHeader>
-                  <div className="py-6 px-4 flex flex-col h-full">
-                    <div className="mb-6">
-                      <form className="relative" onSubmit={(e) => {
+                  <div className="flex-1 overflow-y-auto">
+                    <div className="p-6">
+                      <form className="relative mb-6" onSubmit={(e) => {
                         e.preventDefault();
                         const searchInput = e.currentTarget.querySelector('input');
                         if (searchInput && searchInput.value.trim()) {
@@ -198,7 +235,7 @@ export function StoreLayout({ children }: StoreLayoutProps) {
                           type="search" 
                           name="search"
                           placeholder="Search products..." 
-                          className="w-full pl-8 rounded-full" 
+                          className="w-full pl-8 rounded-full border-muted bg-muted/50" 
                         />
                       </form>
                     </div>
