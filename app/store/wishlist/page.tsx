@@ -5,7 +5,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { formatCurrency } from "@/lib/utils"
 import { useWishlist } from "@/hooks/use-wishlist"
-import { useCart } from "@/hooks/use-cart"
+import { useCart } from "@/lib/cart-provider"
 import { Button } from "@/components/ui/button"
 import { Heart, ShoppingBag, Trash2, ChevronLeft, AlertCircle } from "lucide-react"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
@@ -15,7 +15,7 @@ import { motion, AnimatePresence } from "framer-motion"
 
 export default function WishlistPage() {
   const { wishlist, removeItem } = useWishlist()
-  const { addItem } = useCart()
+  const { addToCart } = useCart()
   const [isMounted, setIsMounted] = useState(false)
   
   useEffect(() => {
@@ -30,15 +30,24 @@ export default function WishlistPage() {
   }
 
   const handleAddToCart = (item: any) => {
-    addItem({
+    // Create a product object that matches the expected format
+    const product = {
       id: item.id,
       name: item.name,
+      description: item.description,
       price: item.price,
-      image: item.image,
-      quantity: 1
-    })
+      category: item.category,
+      image: item.image || "",
+      stock: 0 // Default value since wishlist items might not have stock info
+    }
+    
+    // Add to cart using the correct method
+    addToCart(product, 1)
+    
+    // Remove the item from wishlist after adding to cart
+    removeItem(item.id)
     toast({
-      description: "Item added to cart",
+      description: "Item added to cart and removed from wishlist",
     })
   }
 
@@ -176,4 +185,4 @@ export default function WishlistPage() {
       </div>
     </div>
   )
-} 
+}
