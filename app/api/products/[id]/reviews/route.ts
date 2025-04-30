@@ -1,169 +1,199 @@
 import { NextResponse } from "next/server"
-import { db, Review } from "@/lib/db"
-import mongoose from "mongoose"
-import { currentUser } from "@clerk/nextjs/server"
+import { db } from "@/lib/db"
+import { deleteFromPinata } from "@/utils/pinata"
 
-// Helper function to safely extract the ID parameter
-async function getParamId(params: any): Promise<string> {
-  const resolvedParams = await Promise.resolve(params);
-  return String(resolvedParams?.id || "");
-}
-
-// Route params interface to help TypeScript understand the parameters
 interface RouteParams {
   params: {
-    id: string;
+    id: string
   }
 }
 
-// GET endpoint to fetch reviews for a product
+// Helper function to safely get ID from params
+const getParamId = async (params: RouteParams['params']) => {
+  // This ensures params is properly awaited in Next.js 15
+  const resolvedParams = await Promise.resolve(params);
+  return resolvedParams?.id || '';
+}
+
 export async function GET(request: Request, { params }: RouteParams) {
   try {
     // Get ID safely using our helper function
     const id = await getParamId(params);
+    const product = await db.getProduct(id)
     
-    // Validate ID
-    if (!id) {
-      return NextResponse.json({ error: "Product ID is required" }, { status: 400 });
-    }
-
-    // Make sure product exists
-    const product = await db.getProduct(id);
     if (!product) {
-      return NextResponse.json({ error: "Product not found" }, { status: 404 });
+      return NextResponse.json({ error: "Product not found" }, { status: 404 })
     }
-
-    // Fetch reviews for the product
-    const reviews = await db.getProductReviews(id);
-
-    // Calculate average rating
-    let averageRating = 0;
-    if (reviews.length > 0) {
-      const sum = reviews.reduce((total: number, review: Review) => total + review.rating, 0);
-      averageRating = sum / reviews.length;
-    }
-
-    return NextResponse.json({
-      reviews,
-      count: reviews.length,
-      averageRating
-    });
+    
+    return NextResponse.json(product)
   } catch (error) {
-    console.error("Error fetching reviews:", error);
-    return NextResponse.json({ 
-      error: "Failed to fetch reviews",
-      details: error instanceof Error ? error.message : "Unknown error"
-    }, { status: 500 });
+    console.error("Error fetching product:", error)
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }
 
-// POST endpoint to create a new review
-export async function POST(request: Request, { params }: RouteParams) {
+export async function PUT(request: Request, { params }: RouteParams) {
   try {
-    // Check authentication
-    let user;
-    try {
-      user = await currentUser();
-      if (!user?.id) {
-        return NextResponse.json({ error: "Authentication required" }, { status: 401 });
-      }
-    } catch (authError) {
-      console.error("Authentication error:", authError);
-      return NextResponse.json({ 
-        error: "Authentication failed", 
-        details: authError instanceof Error ? authError.message : "Unknown auth error" 
-      }, { status: 401 });
-    }
-    
-    const userId = user.id;
-
-    // Get product ID
+    // Get ID safely using our helper function
     const id = await getParamId(params);
-    if (!id) {
-      return NextResponse.json({ error: "Product ID is required" }, { status: 400 });
-    }
-
-    // Parse the request body
-    let body;
-    try {
-      body = await request.json();
-    } catch (parseError) {
-      console.error("Error parsing request body:", parseError);
-      return NextResponse.json({ 
-        error: "Invalid request body", 
-        details: "Could not parse JSON request body" 
-      }, { status: 400 });
-    }
+    const body = await request.json()
     
-    const { rating, comment, userName } = body;
-
-    console.log("Review submission data:", { productId: id, userId, rating, comment });
-
     // Validate required fields
-    if (!rating || !comment) {
-      return NextResponse.json({ 
-        error: "Rating and comment are required" 
-      }, { status: 400 });
+    if (!body.name || !body.description || body.price === undefined || !body.category) {
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
-
-    // Validate rating
-    const numericRating = Number(rating);
-    if (isNaN(numericRating) || numericRating < 1 || numericRating > 5) {
-      return NextResponse.json({ 
-        error: "Rating must be a number between 1 and 5" 
-      }, { status: 400 });
-    }
-
-    // Make sure product exists
-    let product;
-    try {
-      product = await db.getProduct(id);
-      if (!product) {
-        return NextResponse.json({ error: "Product not found" }, { status: 404 });
-      }
-    } catch (productError) {
-      console.error("Error fetching product:", productError);
-      return NextResponse.json({ 
-        error: "Error fetching product",
-        details: productError instanceof Error ? productError.message : "Unknown product error"
-      }, { status: 500 });
-    }
-
-    // Create or update the review
-    const displayName = userName || user.firstName || user.username || "Anonymous";
     
-    try {
-      const review = await db.createReview(
-        id,
-        userId,
-        displayName,
-        numericRating,
-        comment,
-        true // Assuming all reviews from logged-in users are verified for this demo
-      );
-
-      if (!review) {
-        return NextResponse.json({ 
-          error: "Failed to create review - no review returned" 
-        }, { status: 500 });
-      }
-
-      return NextResponse.json({
-        message: "Review processed successfully",
-        review
-      }, { status: 201 });
-    } catch (createError) {
-      console.error("Error from createReview:", createError);
-      return NextResponse.json({ 
-        error: "Failed to create review",
-        details: createError instanceof Error ? createError.message : "Unknown error during review creation"
-      }, { status: 500 });
+    // Check if product exists
+    const existingProduct = await db.getProduct(params.id)
+    
+    if (!existingProduct) {
+      return NextResponse.json({ error: "Product not found" }, { status: 404 })
     }
+    
+    // Update the product
+    const updatedProduct = await db.updateProduct(id, {
+      name: body.name,
+      description: body.description,
+      price: parseFloat(body.price),
+      category: body.category,
+      image: body.image,
+      imageCid: body.imageCid || undefined,
+      stock: parseInt(body.stock),
+    })
+    
+    return NextResponse.json(updatedProduct)
   } catch (error) {
-    console.error("Error creating/updating review:", error);
+    console.error("Error updating product:", error)
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+  }
+}
+
+export async function DELETE(request: Request, { params }: RouteParams) {
+  try {
+    // Get ID safely using our helper function
+    const id = await getParamId(params);
+    // Check if product exists
+    const existingProduct = await db.getProduct(id)
+    
+    if (!existingProduct) {
+      return NextResponse.json({ error: "Product not found" }, { status: 404 })
+    }
+    
+    // Track Pinata deletion results
+    const pinataResults = [];
+    
+    // Delete the main product image from Pinata if there's a CID
+    if (existingProduct.imageCid) {
+      try {
+        console.log(`Deleting main product image from Pinata with CID: ${existingProduct.imageCid}`);
+        const deleteResult = await deleteFromPinata(existingProduct.imageCid);
+        pinataResults.push({
+          type: 'main-image',
+          cid: existingProduct.imageCid,
+          success: deleteResult.success,
+          message: deleteResult.message || deleteResult.error
+        });
+      } catch (pinataError) {
+        console.error("Error deleting main image from Pinata:", pinataError);
+        pinataResults.push({
+          type: 'main-image',
+          cid: existingProduct.imageCid,
+          success: false,
+          message: pinataError instanceof Error ? pinataError.message : 'Unknown error'
+        });
+      }
+    } else if (existingProduct.image) {
+      // Try to extract CID from the image URL if imageCid is not directly available
+      try {
+        const imageUrl = existingProduct.image;
+        if (imageUrl && imageUrl.includes('/ipfs/')) {
+          const cid = imageUrl.split('/ipfs/')[1].split('?')[0]; // Extract CID from URL
+          if (cid) {
+            console.log(`Extracted CID from URL: ${cid}. Attempting to delete from Pinata.`);
+            const deleteResult = await deleteFromPinata(cid);
+            pinataResults.push({
+              type: 'main-image-from-url',
+              cid: cid,
+              success: deleteResult.success,
+              message: deleteResult.message || deleteResult.error
+            });
+          }
+        }
+      } catch (extractError) {
+        console.error("Error extracting or deleting CID from image URL:", extractError);
+        pinataResults.push({
+          type: 'main-image-from-url',
+          success: false,
+          message: extractError instanceof Error ? extractError.message : 'CID extraction failed'
+        });
+      }
+    }
+    
+    // Handle gallery images if the product has them
+    // @ts-ignore - Handle gallery property even if not defined in the type
+    if (existingProduct.gallery && Array.isArray(existingProduct.gallery)) {
+      // @ts-ignore - Access gallery property even if not defined in the type
+      for (const galleryItem of existingProduct.gallery) {
+        if (galleryItem && galleryItem.cid) {
+          try {
+            console.log(`Deleting gallery image from Pinata with CID: ${galleryItem.cid}`);
+            const deleteResult = await deleteFromPinata(galleryItem.cid);
+            pinataResults.push({
+              type: 'gallery-image',
+              cid: galleryItem.cid,
+              success: deleteResult.success,
+              message: deleteResult.message || deleteResult.error
+            });
+          } catch (galleryError) {
+            console.error(`Error deleting gallery image with CID ${galleryItem.cid}:`, galleryError);
+            pinataResults.push({
+              type: 'gallery-image',
+              cid: galleryItem.cid,
+              success: false,
+              message: galleryError instanceof Error ? galleryError.message : 'Unknown error'
+            });
+          }
+        } else if (galleryItem && galleryItem.url) {
+          // Try to extract CID from URL
+          try {
+            const imageUrl = galleryItem.url;
+            if (imageUrl && imageUrl.includes('/ipfs/')) {
+              const cid = imageUrl.split('/ipfs/')[1].split('?')[0]; // Extract CID from URL
+              if (cid) {
+                console.log(`Extracted CID from gallery URL: ${cid}. Attempting to delete from Pinata.`);
+                const deleteResult = await deleteFromPinata(cid);
+                pinataResults.push({
+                  type: 'gallery-image-from-url',
+                  cid: cid,
+                  success: deleteResult.success,
+                  message: deleteResult.message || deleteResult.error
+                });
+              }
+            }
+          } catch (extractError) {
+            console.error("Error extracting or deleting CID from gallery URL:", extractError);
+          }
+        }
+      }
+    }
+    
+    // Delete the product from database
+    const success = await db.deleteProduct(id)
+    
+    if (!success) {
+      return NextResponse.json({ 
+        error: "Failed to delete product",
+        pinataResults // Include Pinata results even if product deletion failed
+      }, { status: 500 })
+    }
+    
     return NextResponse.json({ 
-      error: "Failed to process review",
-      details: error instanceof Error ? error.message : "Unknown error"
-    }, { status: 500 });
+      success: true,
+      message: "Product and associated images have been deleted successfully",
+      pinataResults // Include detailed results of Pinata deletions
+    })
+  } catch (error) {
+    console.error("Error deleting product:", error)
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 } 
