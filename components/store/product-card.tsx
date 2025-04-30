@@ -8,9 +8,10 @@ import { Badge } from "@/components/ui/badge"
 import { ShoppingBag, Heart } from "lucide-react"
 import { formatCurrency } from "@/lib/utils"
 import { useWishlist } from "@/hooks/use-wishlist"
-import { useCart } from "@/hooks/use-cart"
+import { useCart } from "@/lib/cart-provider"
 import { toast } from "@/components/ui/use-toast"
 import { cn } from "@/lib/utils"
+import { Product } from "@/lib/db"
 
 interface ProductCardProps {
   product: {
@@ -27,7 +28,7 @@ interface ProductCardProps {
 
 export default function ProductCard({ product, isBestSeller }: ProductCardProps) {
   const { isInWishlist, addItem: addToWishlist, removeItem: removeFromWishlist } = useWishlist()
-  const { addItem: addToCart } = useCart()
+  const { addToCart } = useCart()
   
   const inWishlist = isInWishlist(product.id)
 
@@ -67,13 +68,18 @@ export default function ProductCard({ product, isBestSeller }: ProductCardProps)
     e.preventDefault()
     e.stopPropagation()
     
-    addToCart({
+    // Create a product object that conforms to the Product type
+    const productToAdd: Product = {
       id: product.id,
       name: product.name,
+      description: product.description,
       price: product.price,
-      image: product.image || "",
-      quantity: 1
-    })
+      category: product.category,
+      image: product.image || "", // Ensure image is not undefined
+      stock: product.stock || 0   // Ensure stock is not undefined
+    }
+    
+    addToCart(productToAdd, 1)
     
     toast({
       description: "Product added to cart",

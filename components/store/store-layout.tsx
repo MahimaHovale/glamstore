@@ -10,7 +10,7 @@ import { Home, ShoppingBag, User, Menu, X, Search, Heart, LogOut } from "lucide-
 import { useState, useEffect } from "react"
 import { cn } from "@/lib/utils"
 import { Input } from "@/components/ui/input"
-import { useCart } from "@/hooks/use-cart"
+import { useCart } from "@/lib/cart-provider"
 import {
   Sheet,
   SheetContent,
