@@ -3,15 +3,19 @@ import { NextResponse } from "next/server";
 // Generate an access token using the client ID and secret
 async function generateAccessToken() {
   try {
-    const clientId = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID;
-    const clientSecret = process.env.PAYPAL_SECRET_KEY;
+    const clientIdRaw = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID;
+    const clientSecretRaw = process.env.PAYPAL_SECRET_KEY;
     
-    if (!clientId || !clientSecret) {
+    if (!clientIdRaw || !clientSecretRaw) {
       throw new Error("PayPal client ID or secret key is missing");
     }
     
+    // Clean up the credentials - remove any whitespace or unexpected characters
+    const clientId = clientIdRaw.trim();
+    const clientSecret = clientSecretRaw.trim();
+    
     const auth = Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
-    const response = await fetch(`${process.env.PAYPAL_API_URL || 'https://api-m.sandbox.paypal.com'}/v1/oauth2/token`, {
+    const response = await fetch('https://api-m.sandbox.paypal.com/v1/oauth2/token', {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
@@ -43,7 +47,7 @@ export async function POST(request: Request) {
     const accessToken = await generateAccessToken();
     
     // Capture the order payment
-    const url = `${process.env.PAYPAL_API_URL || 'https://api-m.sandbox.paypal.com'}/v2/checkout/orders/${orderID}/capture`;
+    const url = `https://api-m.sandbox.paypal.com/v2/checkout/orders/${orderID}/capture`;
     
     const response = await fetch(url, {
       method: "POST",

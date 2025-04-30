@@ -144,13 +144,37 @@ function PaymentPageContent() {
         }),
       });
       
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error('PayPal order creation failed:', errorData);
-        throw new Error(errorData.error || 'Failed to create PayPal order');
+      // Get response as text first to help with debugging
+      const responseText = await response.text();
+      let data;
+      
+      try {
+        data = JSON.parse(responseText);
+      } catch (parseError) {
+        console.error('Failed to parse PayPal API response:', responseText);
+        throw new Error(`Invalid response from PayPal API: ${responseText}`);
       }
       
-      const data = await response.json();
+      if (!response.ok) {
+        console.error('PayPal order creation failed:', data);
+        
+        // Try to extract a more specific error message
+        let errorMessage = 'Failed to create PayPal order';
+        
+        if (data && data.error) {
+          errorMessage = data.error;
+        } else if (data && data.details && Array.isArray(data.details) && data.details.length > 0) {
+          // Handle detailed PayPal API errors
+          errorMessage = data.details.map((detail: any) => detail.issue || detail.description).join('; ');
+        } else if (data && data.message) {
+          errorMessage = data.message;
+        } else if (responseText && responseText.includes('Client Authentication failed')) {
+          errorMessage = 'PayPal authentication failed. Please check your PayPal API credentials.';
+        }
+        
+        throw new Error(errorMessage);
+      }
+      
       console.log('PayPal order created:', data);
       
       // Find the approval link
@@ -166,30 +190,35 @@ function PaymentPageContent() {
         throw new Error('No approval link or order ID found in PayPal response');
       }
       
+      let orderResponse;
+      
       if (!approvalLink) {
         // This is a fallback in case the API doesn't return the expected links
         const paypalUrl = `https://www.sandbox.paypal.com/checkoutnow?token=${data.id}`;
         
-        const orderResponse = {
+        orderResponse = {
           id: data.id,
           status: data.status || 'CREATED',
           paymentUrl: paypalUrl
         };
         
         console.log('Created PayPal order with fallback URL:', orderResponse);
-        setPaypalOrder(orderResponse);
-        return;
+      } else {
+        // Create an order object with the approval link
+        orderResponse = {
+          id: data.id,
+          status: data.status,
+          paymentUrl: approvalLink
+        };
+        
+        console.log('Created PayPal order with API URL:', orderResponse);
       }
       
-      // Create an order object with the approval link
-      const orderResponse = {
-        id: data.id,
-        status: data.status,
-        paymentUrl: approvalLink || `https://www.sandbox.paypal.com/checkoutnow?token=${data.id}`
-      };
-      
-      console.log('Created PayPal order:', orderResponse);
+      // Update the state with the new order
       setPaypalOrder(orderResponse);
+      
+      // Return the order response so the caller can use it immediately
+      return orderResponse;
     } catch (error) {
       console.error('Error creating PayPal order:', error);
       setPaypalError(error instanceof Error ? error.message : 'Failed to create PayPal order');
@@ -200,6 +229,8 @@ function PaymentPageContent() {
         description: error instanceof Error ? error.message : "Failed to create PayPal order",
         variant: "destructive",
       });
+      
+      throw error; // Re-throw so the caller knows there was an error
     } finally {
       setIsSubmitting(false);
     }
@@ -491,8 +522,60 @@ function PaymentPageContent() {
   };
   
   // Handle PayPal checkout button click
-  const handlePayPalCheckout = () => {
-    createPayPalOrder();
+  const handlePayPalCheckout = async () => {
+    try {
+      setIsSubmitting(true);
+      
+      // Try direct PayPal order creation
+      try {
+        // Create the PayPal order and get the response directly
+        const order = await createPayPalOrder();
+        
+        if (order && order.paymentUrl) {
+          console.log('Redirecting to PayPal checkout URL immediately:', order.paymentUrl);
+          window.location.href = order.paymentUrl;
+          return; // Exit early if successful
+        }
+      } catch (apiError) {
+        console.error('Error with API order creation:', apiError);
+        // Continue with fallback below
+        
+        setPaypalError(`API Error: ${apiError instanceof Error ? apiError.message : 'Unknown error'}`);
+        toast({
+          title: "PayPal API Error",
+          description: apiError instanceof Error ? apiError.message : "Unknown API error",
+          variant: "destructive",
+        });
+      }
+      
+      // Fallback to the state value if direct return doesn't work
+      if (paypalOrder && paypalOrder.paymentUrl) {
+        setTimeout(() => {
+          console.log('Redirecting to PayPal checkout URL (from state):', paypalOrder.paymentUrl);
+          window.location.href = paypalOrder.paymentUrl;
+        }, 1000);
+      } else {
+        // Last resort fallback - show a button to manually go to PayPal
+        console.error('No PayPal order or payment URL available');
+        setPaypalError('We had trouble connecting to PayPal. You can try completing your payment through our cash on delivery option.');
+        toast({
+          title: "PayPal Connection Issue",
+          description: "We're having trouble connecting to PayPal. You can try again or select cash on delivery.",
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+      }
+    } catch (error) {
+      console.error('Error during PayPal checkout:', error);
+      setPaypalError(error instanceof Error ? error.message : 'Failed to process PayPal checkout');
+      
+      toast({
+        title: "PayPal Error",
+        description: error instanceof Error ? error.message : "Failed to process PayPal checkout",
+        variant: "destructive",
+      });
+      setIsSubmitting(false);
+    }
   };
   
   return (
@@ -643,6 +726,11 @@ function PaymentPageContent() {
                 <div className="bg-destructive/15 p-4 rounded-md mb-6">
                   <p className="text-destructive font-medium">Payment Error</p>
                   <p className="text-sm">{paypalError}</p>
+                  <div className="mt-3">
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      You can try again or select Cash on Delivery to complete your order.
+                    </p>
+                  </div>
                 </div>
               )}
               
@@ -782,9 +870,13 @@ function PaymentPageContent() {
               {paypalOrder && (
                 <Button
                   className="w-full sm:w-auto bg-[#0070ba] hover:bg-[#005ea6] text-white font-medium shadow-md dark:bg-[#0070ba]/90 dark:hover:bg-[#005ea6]/90"
-                  onClick={() => window.location.href = paypalOrder.paymentUrl}
+                  onClick={() => {
+                    // Directly use the URL from state instead of using the handler function
+                    console.log('Redirecting directly to PayPal from button click:', paypalOrder.paymentUrl);
+                    window.location.href = paypalOrder.paymentUrl;
+                  }}
                 >
-                  Complete Payment
+                  Complete Payment with PayPal
                 </Button>
               )}
             </CardFooter>

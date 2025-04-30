@@ -6,18 +6,19 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
-import { Slider } from "@/components/ui/slider"
 import { ShoppingBag, Search, SlidersHorizontal, Heart, Filter, X, Check, Award } from "lucide-react"
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetClose } from "@/components/ui/sheet"
 import { Separator } from "@/components/ui/separator"
 import ProductCard from "@/components/store/product-card"
+import SortSelector from "./_components/sort-selector"
 
-export default async function ProductsPage({ searchParams }: { searchParams: { category?: string, search?: string, bestSellers?: string } }) {
+export default async function ProductsPage({ searchParams }: { searchParams: { category?: string, search?: string, bestSellers?: string, sort?: string } }) {
   // Safely access searchParams - ensure it's properly awaited
   const params = await Promise.resolve(searchParams);
   const category = params?.category || null;
   const searchQuery = params?.search || "";
   const showBestSellers = params?.bestSellers === "true";
+  const sortOption = params?.sort || "newest";
 
   // Fetch products asynchronously
   const allProducts = await db.getProducts();
@@ -51,8 +52,32 @@ export default async function ProductsPage({ searchParams }: { searchParams: { c
     );
   }
 
+  // Sort products based on the sort option
+  switch (sortOption) {
+    case "price-low-to-high":
+      filteredProducts.sort((a, b) => a.price - b.price);
+      break;
+    case "price-high-to-low":
+      filteredProducts.sort((a, b) => b.price - a.price);
+      break;
+    case "popularity":
+      // Sort by best sellers first, then the rest
+      filteredProducts.sort((a, b) => {
+        const aIsBestSeller = bestSellerIds.includes(a.id);
+        const bIsBestSeller = bestSellerIds.includes(b.id);
+        if (aIsBestSeller && !bIsBestSeller) return -1;
+        if (!aIsBestSeller && bIsBestSeller) return 1;
+        return 0;
+      });
+      break;
+    case "newest":
+    default:
+      // Keep default order (assumed to be newest first from the database)
+      break;
+  }
+
   // Get all unique categories
-  const categories = [...new Set(allProducts.map((product) => product.category))]
+  const categories = [...new Set(allProducts.map((product) => product.category))].sort();
 
   return (
     <div className="container px-4 mx-auto py-6 md:py-12">
@@ -70,6 +95,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: { c
               <form action="/store/products" method="GET">
                 {category && <input type="hidden" name="category" value={category} />}
                 {showBestSellers && <input type="hidden" name="bestSellers" value="true" />}
+                {sortOption !== "newest" && <input type="hidden" name="sort" value={sortOption} />}
                 <Input
                   type="search"
                   name="search"
@@ -95,32 +121,37 @@ export default async function ProductsPage({ searchParams }: { searchParams: { c
                 <div className="py-6">
                   <h3 className="font-medium mb-4">Categories</h3>
                   <div className="space-y-3">
-                    <Link
-                      href="/store/products"
-                      className={`flex items-center justify-between p-2 rounded-md transition-colors ${!category && !showBestSellers ? "bg-pink-50 text-pink-700" : "hover:bg-muted/50"}`}
-                    >
-                      <span>All Products</span>
-                      {!category && !showBestSellers && <Check className="h-4 w-4" />}
-                    </Link>
-                    <Link
-                      href="/store/products?bestSellers=true"
-                      className={`flex items-center justify-between p-2 rounded-md transition-colors ${showBestSellers ? "bg-pink-50 text-pink-700" : "hover:bg-muted/50"}`}
-                    >
-                      <div className="flex items-center">
-                        <Award className="h-4 w-4 mr-2 text-pink-600" />
-                        <span>Best Sellers</span>
-                      </div>
-                      {showBestSellers && <Check className="h-4 w-4" />}
-                    </Link>
-                    {categories.map((cat) => (
+                    <SheetClose asChild>
                       <Link
-                        key={cat}
-                        href={`/store/products?category=${cat}${showBestSellers ? '&bestSellers=true' : ''}`}
-                        className={`flex items-center justify-between p-2 rounded-md transition-colors ${category === cat ? "bg-pink-50 text-pink-700" : "hover:bg-muted/50"}`}
+                        href={`/store/products${showBestSellers ? '?bestSellers=true' : ''}${sortOption !== "newest" ? `${showBestSellers ? '&' : '?'}sort=${sortOption}` : ''}`}
+                        className={`flex items-center justify-between p-2 rounded-md transition-colors ${!category ? "bg-pink-50 text-pink-700" : "hover:bg-muted/50"}`}
                       >
-                        <span>{cat}</span>
-                        {category === cat && <Check className="h-4 w-4" />}
+                        <span>All Products</span>
+                        {!category && <Check className="h-4 w-4" />}
                       </Link>
+                    </SheetClose>
+                    <SheetClose asChild>
+                      <Link
+                        href={`/store/products?bestSellers=${!showBestSellers}${category ? `&category=${category}` : ''}${sortOption !== "newest" ? `&sort=${sortOption}` : ''}`}
+                        className={`flex items-center justify-between p-2 rounded-md transition-colors ${showBestSellers ? "bg-pink-50 text-pink-700" : "hover:bg-muted/50"}`}
+                      >
+                        <div className="flex items-center">
+                          <Award className="h-4 w-4 mr-2 text-pink-600" />
+                          <span>Best Sellers</span>
+                        </div>
+                        {showBestSellers && <Check className="h-4 w-4" />}
+                      </Link>
+                    </SheetClose>
+                    {categories.map((cat) => (
+                      <SheetClose asChild key={cat}>
+                        <Link
+                          href={`/store/products?category=${cat}${showBestSellers ? '&bestSellers=true' : ''}${sortOption !== "newest" ? `&sort=${sortOption}` : ''}`}
+                          className={`flex items-center justify-between p-2 rounded-md transition-colors ${category === cat ? "bg-pink-50 text-pink-700" : "hover:bg-muted/50"}`}
+                        >
+                          <span>{cat}</span>
+                          {category === cat && <Check className="h-4 w-4" />}
+                        </Link>
+                      </SheetClose>
                     ))}
                   </div>
                 </div>
@@ -129,11 +160,11 @@ export default async function ProductsPage({ searchParams }: { searchParams: { c
           </div>
         </div>
         
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2 flex-wrap gap-2">
           {searchQuery && (
             <Badge variant="outline" className="rounded-md px-2 py-1 flex items-center gap-1">
               <span>Search: {searchQuery}</span>
-              <Link href={category ? `/store/products?category=${category}${showBestSellers ? '&bestSellers=true' : ''}` : showBestSellers ? '/store/products?bestSellers=true' : '/store/products'}>
+              <Link href={category ? `/store/products?category=${category}${showBestSellers ? '&bestSellers=true' : ''}${sortOption !== "newest" ? `&sort=${sortOption}` : ''}` : showBestSellers ? `/store/products?bestSellers=true${sortOption !== "newest" ? `&sort=${sortOption}` : ''}` : sortOption !== "newest" ? `/store/products?sort=${sortOption}` : '/store/products'}>
                 <X className="h-3 w-3" />
               </Link>
             </Badge>
@@ -142,7 +173,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: { c
           {category && (
             <Badge variant="outline" className="rounded-md px-2 py-1 flex items-center gap-1">
               <span>Category: {category}</span>
-              <Link href={searchQuery ? `/store/products?search=${searchQuery}${showBestSellers ? '&bestSellers=true' : ''}` : showBestSellers ? '/store/products?bestSellers=true' : '/store/products'}>
+              <Link href={searchQuery ? `/store/products?search=${searchQuery}${showBestSellers ? '&bestSellers=true' : ''}${sortOption !== "newest" ? `&sort=${sortOption}` : ''}` : showBestSellers ? `/store/products?bestSellers=true${sortOption !== "newest" ? `&sort=${sortOption}` : ''}` : sortOption !== "newest" ? `/store/products?sort=${sortOption}` : '/store/products'}>
                 <X className="h-3 w-3" />
               </Link>
             </Badge>
@@ -152,7 +183,16 @@ export default async function ProductsPage({ searchParams }: { searchParams: { c
             <Badge variant="outline" className="rounded-md px-2 py-1 flex items-center gap-1 border-pink-200 text-pink-700">
               <Award className="h-3 w-3 mr-1" />
               <span>Best Sellers</span>
-              <Link href={category ? `/store/products?category=${category}` : searchQuery ? `/store/products?search=${searchQuery}` : '/store/products'}>
+              <Link href={category ? `/store/products?category=${category}${sortOption !== "newest" ? `&sort=${sortOption}` : ''}` : searchQuery ? `/store/products?search=${searchQuery}${sortOption !== "newest" ? `&sort=${sortOption}` : ''}` : sortOption !== "newest" ? `/store/products?sort=${sortOption}` : '/store/products'}>
+                <X className="h-3 w-3" />
+              </Link>
+            </Badge>
+          )}
+          
+          {sortOption !== "newest" && (
+            <Badge variant="outline" className="rounded-md px-2 py-1 flex items-center gap-1">
+              <span>Sort: {sortOption.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</span>
+              <Link href={`/store/products${category ? `?category=${category}` : ''}${showBestSellers ? `${category ? '&' : '?'}bestSellers=true` : ''}${searchQuery ? `${category || showBestSellers ? '&' : '?'}search=${searchQuery}` : ''}`}>
                 <X className="h-3 w-3" />
               </Link>
             </Badge>
@@ -167,14 +207,14 @@ export default async function ProductsPage({ searchParams }: { searchParams: { c
                 <h2 className="font-medium text-lg mb-4">Categories</h2>
                 <div className="space-y-2">
                   <Link
-                    href="/store/products"
-                    className={`flex items-center justify-between p-2 rounded-md transition-colors ${!category && !showBestSellers ? "bg-pink-50 text-pink-700" : "hover:bg-muted/50"}`}
+                    href={`/store/products${showBestSellers ? '?bestSellers=true' : ''}${sortOption !== "newest" ? `${showBestSellers ? '&' : '?'}sort=${sortOption}` : ''}${searchQuery ? `${showBestSellers || sortOption !== "newest" ? '&' : '?'}search=${searchQuery}` : ''}`}
+                    className={`flex items-center justify-between p-2 rounded-md transition-colors ${!category ? "bg-pink-50 text-pink-700" : "hover:bg-muted/50"}`}
                   >
                     <span>All Products</span>
-                    {!category && !showBestSellers && <Check className="h-4 w-4" />}
+                    {!category && <Check className="h-4 w-4" />}
                   </Link>
                   <Link
-                    href="/store/products?bestSellers=true"
+                    href={`/store/products?bestSellers=${!showBestSellers}${category ? `&category=${category}` : ''}${sortOption !== "newest" ? `&sort=${sortOption}` : ''}${searchQuery ? `&search=${searchQuery}` : ''}`}
                     className={`flex items-center justify-between p-2 rounded-md transition-colors ${showBestSellers ? "bg-pink-50 text-pink-700" : "hover:bg-muted/50"}`}
                   >
                     <div className="flex items-center">
@@ -186,28 +226,13 @@ export default async function ProductsPage({ searchParams }: { searchParams: { c
                   {categories.map((cat) => (
                     <Link
                       key={cat}
-                      href={`/store/products?category=${cat}${showBestSellers ? '&bestSellers=true' : ''}`}
+                      href={`/store/products?category=${cat}${showBestSellers ? '&bestSellers=true' : ''}${sortOption !== "newest" ? `&sort=${sortOption}` : ''}${searchQuery ? `&search=${searchQuery}` : ''}`}
                       className={`flex items-center justify-between p-2 rounded-md transition-colors ${category === cat ? "bg-pink-50 text-pink-700" : "hover:bg-muted/50"}`}
                     >
                       <span>{cat}</span>
                       {category === cat && <Check className="h-4 w-4" />}
                     </Link>
                   ))}
-                </div>
-                
-                <Separator className="my-6" />
-                
-                <h2 className="font-medium text-lg mb-4">Price Range</h2>
-                <div className="space-y-4">
-                  <Slider defaultValue={[0, 100]} max={100} step={1} />
-                  <div className="flex items-center justify-between">
-                    <Input type="number" placeholder="Min" className="w-[45%]" />
-                    <span>-</span>
-                    <Input type="number" placeholder="Max" className="w-[45%]" />
-                  </div>
-                  <Button className="w-full bg-pink-600 hover:bg-pink-700 text-white">
-                    Apply Filters
-                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -221,12 +246,12 @@ export default async function ProductsPage({ searchParams }: { searchParams: { c
               </p>
               <div className="flex gap-2 items-center">
                 <span className="text-sm text-muted-foreground">Sort by:</span>
-                <select className="py-1 px-2 border rounded-md text-sm">
-                  <option>Newest</option>
-                  <option>Price: Low to High</option>
-                  <option>Price: High to Low</option>
-                  <option>Popularity</option>
-                </select>
+                <SortSelector 
+                  sortOption={sortOption}
+                  category={category}
+                  showBestSellers={showBestSellers}
+                  searchQuery={searchQuery}
+                />
               </div>
             </div>
             
@@ -248,9 +273,10 @@ export default async function ProductsPage({ searchParams }: { searchParams: { c
                     <Filter className="h-10 w-10 text-muted-foreground" />
                   </div>
                   <h3 className="text-xl font-semibold">No products found</h3>
-                  <p className="text-muted-foreground mt-2 max-w-md">
-                    We couldn't find any products matching your criteria. Try adjusting your filters or search term.
-                  </p>
+                  <p className="text-muted-foreground mt-2 mb-6">Try adjusting your search or filter criteria</p>
+                  <Link href="/store/products">
+                    <Button variant="outline">Clear all filters</Button>
+                  </Link>
                 </div>
               )}
             </div>

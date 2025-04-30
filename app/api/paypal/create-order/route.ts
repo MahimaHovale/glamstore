@@ -4,21 +4,27 @@ import { NextResponse } from "next/server";
 async function generateAccessToken() {
   try {
     // Use credentials from environment variables
-    const clientId = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID;
-    const clientSecret = process.env.PAYPAL_SECRET_KEY;
+    const clientIdRaw = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID;
+    const clientSecretRaw = process.env.PAYPAL_SECRET_KEY;
     
-    if (!clientId || !clientSecret) {
+    if (!clientIdRaw || !clientSecretRaw) {
       throw new Error('PayPal credentials are missing in environment variables');
     }
+    
+    // Clean up the credentials - remove any whitespace or unexpected characters
+    const clientId = clientIdRaw.trim();
+    const clientSecret = clientSecretRaw.trim();
+    
+    console.log('Client ID length:', clientId.length);
+    console.log('Client Secret length:', clientSecret.length);
     
     // Create Basic auth string
     const auth = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
     
-    // Use the API URL from environment variables
-    const apiUrl = process.env.PAYPAL_API_URL || 'https://api-m.sandbox.paypal.com';
-    const tokenUrl = `${apiUrl}/v1/oauth2/token`;
+    // Use api-m.sandbox.paypal.com for authentication ALWAYS
+    const tokenUrl = 'https://api-m.sandbox.paypal.com/v1/oauth2/token';
     
-    console.log('Using PayPal API URL:', apiUrl);
+    console.log('Using PayPal token URL:', tokenUrl);
     console.log('Requesting PayPal access token');
     
     // Log the credentials being used (partially masked)
@@ -140,7 +146,11 @@ export async function POST(request: Request) {
     }
     
     // Set up the PayPal order request
-    const url = `${process.env.PAYPAL_API_URL || 'https://sandbox.paypal.com'}/v2/checkout/orders`;
+    const apiUrl = 'https://api-m.sandbox.paypal.com';
+    const orderUrl = `${apiUrl}/v2/checkout/orders`;
+    
+    
+    console.log('Creating PayPal order at:', orderUrl);
     
     // Convert country to 2-letter ISO code
     let countryCode = "US"; // Default
@@ -232,13 +242,6 @@ export async function POST(request: Request) {
           'http://localhost:3000/store/checkout/payment',
       },
     };
-    
-    // Use the API URL from environment variables
-    const apiUrl = process.env.PAYPAL_API_URL || 'https://api-m.sandbox.paypal.com';
-    const orderUrl = `${apiUrl}/v2/checkout/orders`;
-    
-    
-    console.log('Creating PayPal order at:', orderUrl);
     
     // Make API request
     let response;

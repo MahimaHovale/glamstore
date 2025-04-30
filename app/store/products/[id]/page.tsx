@@ -10,6 +10,8 @@ import AddToWishlistButton from "./_components/add-to-wishlist-button"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
+import ProductCard from "@/components/store/product-card"
+import { ReviewsSection, ProductRating } from "./_components/reviews-section"
 
 export default async function ProductPage({ params }: { params: { id: string } }) {
   // Ensure params.id is properly awaited and used correctly
@@ -107,10 +109,7 @@ export default async function ProductPage({ params }: { params: { id: string } }
                 {product.category}
               </Badge>
               <div className="flex items-center text-amber-500">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <Star key={star} className="h-4 w-4 fill-current" />
-                ))}
-                <span className="ml-2 text-xs text-muted-foreground">(24 reviews)</span>
+                <ProductRating productId={product.id} />
               </div>
             </div>
             
@@ -130,7 +129,7 @@ export default async function ProductPage({ params }: { params: { id: string } }
               </Badge>
               {product.stock > 0 && (
                 <span className="text-sm text-muted-foreground">
-                  {product.stock} units available
+                  {product.stock} {product.stock === 1 ? "unit" : "units"} available
                 </span>
               )}
             </div>
@@ -204,14 +203,12 @@ export default async function ProductPage({ params }: { params: { id: string } }
               value="reviews" 
               className="rounded-none border-b-2 border-transparent data-[state=active]:border-pink-500 data-[state=active]:bg-transparent py-3 text-muted-foreground data-[state=active]:text-foreground"
             >
-              Reviews (24)
+              Reviews
             </TabsTrigger>
           </TabsList>
           <TabsContent value="description" className="pt-6">
             <div className="prose max-w-none">
               <p>{product.description}</p>
-              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nisl vel ultricies lacinia, nisl nisl aliquam nisl, eget aliquam nisl nisl sit amet nisl. Sed euismod, nisl vel ultricies lacinia, nisl nisl aliquam nisl, eget aliquam nisl nisl sit amet nisl.</p>
-              <p>Sed euismod, nisl vel ultricies lacinia, nisl nisl aliquam nisl, eget aliquam nisl nisl sit amet nisl. Sed euismod, nisl vel ultricies lacinia, nisl nisl aliquam nisl, eget aliquam nisl nisl sit amet nisl.</p>
             </div>
           </TabsContent>
           <TabsContent value="details" className="pt-6">
@@ -233,7 +230,7 @@ export default async function ProductPage({ params }: { params: { id: string } }
                   </div>
                   <div className="grid grid-cols-2 gap-2 border-b pb-2">
                     <span className="text-muted-foreground">Stock</span>
-                    <span>{product.stock} units</span>
+                    <span>{product.stock} {product.stock === 1 ? "unit" : "units"}</span>
                   </div>
                 </div>
               </div>
@@ -248,87 +245,18 @@ export default async function ProductPage({ params }: { params: { id: string } }
             </div>
           </TabsContent>
           <TabsContent value="reviews" className="pt-6">
-            <div className="space-y-6">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-medium">Customer Reviews</h3>
-                <Button className="bg-pink-600 hover:bg-pink-700 text-white">Write a Review</Button>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="border rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <div>
-                      <h4 className="font-medium">Sarah Johnson</h4>
-                      <p className="text-xs text-muted-foreground">Verified Purchase</p>
-                    </div>
-                    <div className="flex text-amber-500">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <Star key={star} className="h-4 w-4 fill-current" />
-                      ))}
-                    </div>
-                  </div>
-                  <p className="text-sm mb-2">Amazing product! I've been using it for a month and already seeing results.</p>
-                  <p className="text-xs text-muted-foreground">Posted on April 15, 2025</p>
-                </div>
-                
-                <div className="border rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <div>
-                      <h4 className="font-medium">Michael Thompson</h4>
-                      <p className="text-xs text-muted-foreground">Verified Purchase</p>
-                    </div>
-                    <div className="flex text-amber-500">
-                      {[1, 2, 3, 4].map((star) => (
-                        <Star key={star} className="h-4 w-4 fill-current" />
-                      ))}
-                      <Star className="h-4 w-4 text-muted-foreground" />
-                    </div>
-                  </div>
-                  <p className="text-sm mb-2">Good quality product but the packaging could be improved.</p>
-                  <p className="text-xs text-muted-foreground">Posted on April 10, 2025</p>
-                </div>
-              </div>
-              
-              <div className="flex justify-center">
-                <Button variant="outline">Load More Reviews</Button>
-              </div>
-            </div>
+            <ReviewsSection productId={product.id} />
           </TabsContent>
         </Tabs>
       </div>
       
       {/* Related products */}
       {relatedProducts.length > 0 && (
-        <div className="mt-16">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-bold">Related Products</h2>
-            <Link href={`/store/products?category=${product.category}`}>
-              <Button variant="link" className="text-pink-600 hover:text-pink-700">
-                View All
-              </Button>
-            </Link>
-          </div>
-          
+        <div className="mt-20">
+          <h2 className="text-2xl font-bold mb-6">You may also like</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {relatedProducts.map((relatedProduct) => (
-              <Link key={relatedProduct.id} href={`/store/products/${relatedProduct.id}`} className="group">
-                <div className="overflow-hidden rounded-lg border">
-                  <div className="relative aspect-square">
-                    <Image
-                      src={formatImageUrl(relatedProduct.image)}
-                      alt={relatedProduct.name}
-                      fill
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                      className="object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-medium line-clamp-1">{relatedProduct.name}</h3>
-                    <p className="mt-1 text-sm text-muted-foreground line-clamp-1">{relatedProduct.category}</p>
-                    <p className="mt-2 font-semibold text-pink-600">{formatCurrency(relatedProduct.price)}</p>
-                  </div>
-                </div>
-              </Link>
+            {relatedProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
             ))}
           </div>
         </div>
