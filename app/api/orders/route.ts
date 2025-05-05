@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import connectDB from "@/lib/mongodb"
+import { Order } from "@/lib/db"
 
 export async function GET(request: Request) {
   try {
@@ -12,9 +13,19 @@ export async function GET(request: Request) {
     
     if (userId) {
       console.log(`GET /api/orders: Fetching orders for user ${userId}`);
-      const userOrders = await db.getUserOrders(userId);
-      console.log(`GET /api/orders: Found ${userOrders.length} orders for user ${userId}`);
-      return NextResponse.json(userOrders);
+      // Use the getUserOrders method - we check if it exists on the db object first
+      if ('getUserOrders' in db) {
+        // Type assertion to inform TypeScript this method exists
+        const userOrders = await (db as any).getUserOrders(userId);
+        console.log(`GET /api/orders: Found ${userOrders.length} orders for user ${userId}`);
+        return NextResponse.json(userOrders);
+      } else {
+        // Fallback if method doesn't exist
+        const orders = await db.getOrders() as Order[];
+        const userOrders = orders.filter(order => order.userId === userId);
+        console.log(`GET /api/orders: Found ${userOrders.length} orders for user ${userId}`);
+        return NextResponse.json(userOrders);
+      }
     } else {
       console.log('GET /api/orders: Fetching all orders');
       const orders = await db.getOrders();
@@ -112,8 +123,9 @@ export async function POST(request: Request) {
     console.log('Creating order with data:', JSON.stringify(orderData));
     
     try {
-      // Create the order
-      const order = await db.createOrder(orderData);
+      // Create the order - use type assertion with proper interface
+      const createOrder = (db as any).createOrder;
+      const order = await createOrder(orderData);
       console.log('Order created successfully:', order.id);
       
       // Update product stock after successful order creation

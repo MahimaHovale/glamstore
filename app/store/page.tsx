@@ -35,7 +35,7 @@ export default async function StorePage() {
       </section>
 
       {/* Best Seller Products */}
-      <section className="w-full py-16 md:py-24">
+      <section className="w-full py-16 md:py-24 bg-background">
         <div className="container px-4 mx-auto">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-12">
             <div className="space-y-3">

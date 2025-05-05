@@ -112,7 +112,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                           "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors mb-1",
                           isActive 
                             ? "bg-pink-50 text-pink-600 font-medium dark:bg-pink-950 dark:text-pink-400" 
-                            : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                            : "text-muted-foreground hover:text-pink-600 hover:bg-pink-50 dark:hover:bg-pink-950 dark:hover:text-pink-400"
                         )}
                       >
                         <item.icon className={cn("h-4 w-4", isActive ? "text-pink-600 dark:text-pink-400" : "")} />
@@ -132,7 +132,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                 <Button 
                   variant="ghost" 
                   size="sm" 
-                  className="w-full justify-start text-muted-foreground hover:text-foreground"
+                  className="w-full justify-start text-muted-foreground hover:text-pink-600 hover:bg-pink-50 dark:hover:bg-pink-950 dark:hover:text-pink-400"
                   asChild
                 >
                   <Link href="/store">
@@ -191,7 +191,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                       "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors mb-1",
                       isActive 
                         ? "bg-pink-50 text-pink-600 font-medium dark:bg-pink-950 dark:text-pink-400" 
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                        : "text-muted-foreground hover:text-pink-600 hover:bg-pink-50 dark:hover:bg-pink-950 dark:hover:text-pink-400"
                     )}
                   >
                     <item.icon className={cn("h-4 w-4", isActive ? "text-pink-600 dark:text-pink-400" : "")} />
@@ -216,7 +216,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
               <Button 
                 variant="outline" 
                 size="sm" 
-                className="w-full justify-start text-muted-foreground"
+                className="w-full justify-start text-muted-foreground hover:text-pink-600 hover:bg-pink-50 dark:hover:bg-pink-950 dark:hover:text-pink-400"
                 asChild
               >
                 <Link href="/store">

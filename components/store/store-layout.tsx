@@ -52,14 +52,17 @@ export function StoreLayout({ children }: StoreLayoutProps) {
 
   const totalItems = cart.reduce((total, item) => total + item.quantity, 0)
 
+  // Check if we're on the home page to add the store-homepage class
+  const isHomePage = pathname === "/store";
+
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className={cn("flex min-h-screen flex-col", isHomePage && "store-homepage")}>
       <header 
         className={cn(
           "sticky top-0 z-50 w-full transition-all duration-200",
           isScrolled 
-            ? "bg-white/95 dark:bg-gray-900/95 backdrop-blur-md shadow-sm border-b dark:border-gray-800" 
-            : "bg-transparent"
+            ? "bg-white dark:bg-gray-900 shadow-sm border-b dark:border-gray-800" 
+            : "bg-white dark:bg-gray-900"
         )}
       >
         <div className="container px-4 mx-auto">
