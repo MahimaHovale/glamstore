@@ -7,6 +7,7 @@ import { ArrowRight, ShoppingBag, Star, TrendingUp, Heart, Award } from "lucide-
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { StoreCarousel } from "@/components/store/carousel"
+import ProductCard from "@/components/store/product-card"
 
 // Product interface definition
 interface Product {
@@ -56,42 +57,11 @@ export default async function StorePage() {
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {bestSellerProducts.map((product) => (
-              <Card key={product.id} className="group overflow-hidden transition-all duration-300 hover:shadow-lg">
-                <Link href={`/store/products/${product.id}`}>
-                  <div className="relative aspect-square overflow-hidden">
-                    <Image
-                      src={product.image || "/placeholder.svg"}
-                      alt={product.name}
-                      fill
-                      className="object-cover transition-transform duration-500 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    <div className="absolute top-2 left-2 bg-pink-600 text-white px-2 py-1 rounded-full text-xs font-medium z-10">
-                      Best Seller
-                    </div>
-                    <Button size="icon" variant="ghost" className="absolute top-2 right-2 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-pink-500/20">
-                      <Heart className="h-5 w-5" />
-                    </Button>
-                  </div>
-                </Link>
-                <CardContent className="p-4">
-                  <div className="space-y-1">
-                    <Badge variant="outline" className="font-normal text-xs text-muted-foreground">
-                      {product.category}
-                    </Badge>
-                    <h3 className="font-medium text-lg line-clamp-1">{product.name}</h3>
-                    <p className="text-sm text-muted-foreground line-clamp-2">{product.description}</p>
-                  </div>
-                </CardContent>
-                <CardFooter className="p-4 pt-0 flex items-center justify-between">
-                  <p className="font-semibold text-lg">{formatCurrency(product.price)}</p>
-                  <Link href={`/store/products/${product.id}`}>
-                    <Button size="sm" variant="ghost" className="rounded-full hover:bg-pink-100 hover:text-pink-700">
-                      <ShoppingBag className="h-4 w-4 mr-1" /> View
-                    </Button>
-                  </Link>
-                </CardFooter>
-              </Card>
+              <ProductCard 
+                key={product.id} 
+                product={product}
+                isBestSeller={true} 
+              />
             ))}
           </div>
         </div>
