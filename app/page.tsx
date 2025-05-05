@@ -6,8 +6,13 @@ import { ArrowRight, ShieldCheck, Truck, Users, Heart, Star, ShoppingBag } from 
 import { Badge } from "@/components/ui/badge"
 import { db } from "@/lib/db"
 import { formatCurrency } from "@/lib/utils"
+// Remove ProductCard import since we're removing the featured products section
+import { Product } from "@/lib/db";
 
 export default async function Home() {
+  // Just get products for potential future use, but remove the featuredProducts array creation
+  const products = await db.getProducts();
+
   return (
     <div className="flex min-h-screen flex-col">
       <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur-md shadow-sm">
@@ -208,6 +213,9 @@ export default async function Home() {
             </div>
           </div>
         </section>
+        
+        {/* Featured Products section removed */}
+        
       </main>
       <footer className="w-full py-6 bg-gradient-to-br from-pink-50 to-purple-50 border-t">
         <div className="container px-4 md:px-6">
