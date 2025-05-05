@@ -6,7 +6,7 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useUser, UserButton, SignOutButton } from "@clerk/nextjs"
 import { Button } from "@/components/ui/button"
-import { Home, ShoppingBag, User, Menu, X, Search, Heart, LogOut } from "lucide-react"
+import { Home, ShoppingBag, User, Menu, X, Search, Heart, LogOut, Camera } from "lucide-react"
 import { useState, useEffect } from "react"
 import { cn } from "@/lib/utils"
 import { Input } from "@/components/ui/input"
@@ -46,6 +46,7 @@ export function StoreLayout({ children }: StoreLayoutProps) {
   const navigation = [
     { name: "Home", href: "/store", icon: Home },
     { name: "Products", href: "/store/products", icon: ShoppingBag },
+    { name: "Image Search", href: "/store/image-search", icon: Camera },
     { name: "Account", href: "/store/account", icon: User },
   ]
 
@@ -91,21 +92,34 @@ export function StoreLayout({ children }: StoreLayoutProps) {
             {/* Desktop Actions */}
             <div className="hidden md:flex items-center space-x-4 z-20">
               <div className="relative">
-                <form className="hidden lg:block" onSubmit={(e) => {
-                  e.preventDefault();
-                  const searchInput = e.currentTarget.querySelector('input');
-                  if (searchInput && searchInput.value.trim()) {
-                    router.push(`/store/products?search=${encodeURIComponent(searchInput.value.trim())}`);
-                  }
-                }}>
-                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input 
-                    type="search" 
-                    name="search"
-                    placeholder="Search products..." 
-                    className="w-[200px] pl-8 rounded-full border-muted focus:border-pink-300 focus:ring-pink-200 dark:border-gray-700 dark:focus:border-pink-800 dark:focus:ring-pink-900" 
-                  />
-                </form>
+                <div className="hidden lg:flex items-center gap-2">
+                  <form className="relative" onSubmit={(e) => {
+                    e.preventDefault();
+                    const searchInput = e.currentTarget.querySelector('input');
+                    if (searchInput && searchInput.value.trim()) {
+                      router.push(`/store/products?search=${encodeURIComponent(searchInput.value.trim())}`);
+                    }
+                  }}>
+                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input 
+                      type="search" 
+                      name="search"
+                      placeholder="Search products..." 
+                      className="w-[200px] pl-8 rounded-l-full border-muted focus:border-pink-300 focus:ring-pink-200 dark:border-gray-700 dark:focus:border-pink-800 dark:focus:ring-pink-900" 
+                    />
+                  </form>
+                  <Link href="/store/image-search">
+                    <Button 
+                      variant="default" 
+                      size="sm" 
+                      className="rounded-r-full flex items-center gap-1 bg-pink-600 hover:bg-pink-700 text-white h-10 -ml-1 px-3"
+                      title="Search by Image"
+                    >
+                      <Camera className="h-4 w-4" />
+                      <span>Scan</span>
+                    </Button>
+                  </Link>
+                </div>
                 <Sheet>
                   <SheetTrigger asChild className="lg:hidden">
                     <Button variant="ghost" size="icon">
