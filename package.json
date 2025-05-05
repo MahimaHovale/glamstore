@@ -51,6 +51,7 @@
     "date-fns": "^3.6.0",
     "embla-carousel-react": "^8.5.1",
     "framer-motion": "^12.9.2",
+    "groq-sdk": "^0.21.0",
     "html-pdf-node": "^1.0.8",
     "html2canvas": "^1.4.1",
     "input-otp": "1.4.1",
