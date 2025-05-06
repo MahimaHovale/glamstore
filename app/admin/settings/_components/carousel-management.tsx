@@ -15,8 +15,8 @@ export function CarouselManagement() {
   const [loading, setLoading] = useState(false);
   const [carouselImages, setCarouselImages] = useState<CarouselImage[]>([]);
   
-  // Pinata group ID for carousel images
-  const carouselGroupId = "ed0f5ad3-b6de-4d56-92fc-9c008ff6eb19";
+  // Pinata group ID for carousel images from environment variable
+  const carouselGroupId = process.env.NEXT_PUBLIC_CAROUSEL_GROUP_ID || "";
 
   useEffect(() => {
     const fetchCarouselImages = async () => {
