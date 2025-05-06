@@ -14,26 +14,34 @@ body {
 
 @layer base {
   :root {
-    /* Light mode color palette with #FFC8DD pink background */
-    --background: 336 100% 90%; /* #FFC8DD - Pink background */
-    --foreground: 270 30% 25%; /* Dark text for contrast */
-    --card: 0 0% 100%; /* White cards */
-    --card-foreground: 270 30% 25%; /* Dark text for contrast */
-    --popover: 0 0% 100%; /* White popovers */
-    --popover-foreground: 270 30% 25%; /* Dark text for contrast */
-    --primary: 0 0% 9%; /* Original primary color */
-    --primary-foreground: 0 0% 98%; /* Original primary foreground */
-    --secondary: 0 0% 96.1%; /* Original secondary color */
-    --secondary-foreground: 0 0% 9%; /* Original secondary foreground */
-    --muted: 0 0% 96.1%; /* Original muted color */
-    --muted-foreground: 0 0% 45.1%; /* Original muted foreground */
-    --accent: 0 0% 96.1%; /* Original accent color */
-    --accent-foreground: 0 0% 9%; /* Original accent foreground */
-    --destructive: 0 84.2% 60.2%; /* Original destructive color */
-    --destructive-foreground: 0 0% 98%; /* Original destructive foreground */
-    --border: 0 0% 89.8%; /* Original border color */
-    --input: 0 0% 89.8%; /* Original input color */
-    --ring: 0 0% 3.9%; /* Original ring color */
+    /* Light mode color palette with beauty product colors */
+    --background: 351 100% 95%; /* #FFF1F3 - Lighter version of Soft Rose Pink */
+    --foreground: 325 15% 30%; /* Dark mauve text for contrast */
+    --card: 0 0% 100%; /* #FFFFFF - Clean White */
+    --card-foreground: 325 15% 30%; /* Dark mauve text for contrast */
+    --popover: 0 0% 100%; /* #FFFFFF - Clean White */
+    --popover-foreground: 325 15% 30%; /* Dark mauve text for contrast */
+    
+    /* Main color scheme */
+    --primary: 351 69% 91%; /* #F7CAD0 - Soft Rose Pink */
+    --primary-foreground: 325 15% 30%; /* Dark text for contrast on pink */
+    --secondary: 22 100% 92%; /* #FFE5D9 - Warm Peach */
+    --secondary-foreground: 325 15% 30%; /* Dark text for contrast */
+    
+    /* Accent colors */
+    --muted: 120 15% 85%; /* #CAD2C5 - Sage Green */
+    --muted-foreground: 325 15% 30%; /* Dark text */
+    --accent: 44 73% 88%; /* #F5E6CC - Soft Gold */
+    --accent-foreground: 325 15% 30%; /* Dark text */
+    
+    /* Call to action */
+    --destructive: 359 100% 69%; /* #FF8C94 - Coral */
+    --destructive-foreground: 0 0% 100%; /* White text for buttons */
+    
+    /* Other UI elements */
+    --border: 351 30% 86%; /* Lighter version of main pink */
+    --input: 351 30% 86%; /* Lighter version of main pink */
+    --ring: 351 69% 91%; /* Soft Rose Pink */
     
     /* Chart colors */
     --chart-1: 12 76% 61%; /* Original chart color */
@@ -61,44 +69,56 @@ body {
     --toast-destructive-border: 0 84.2% 55%; /* Darker red border for destructive toasts */
   }
   .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 336 70% 20%; /* Dark pink for hover effect in dark mode */
-    --sidebar-accent-foreground: 336 80% 70%; /* Light pink for text on hover in dark mode */
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* True black dark mode color palette */
+    --background: 0 0% 3.9%; /* True black background */
+    --foreground: 0 0% 98%; /* Light text for contrast */
+    --card: 0 0% 3.9%; /* True black for cards */
+    --card-foreground: 0 0% 98%; /* Light text for contrast */
+    --popover: 0 0% 3.9%; /* True black for popovers */
+    --popover-foreground: 0 0% 98%; /* Light text for contrast */
+    
+    /* Main color scheme */
+    --primary: 0 0% 98%; /* White for primary elements */
+    --primary-foreground: 0 0% 9%; /* Dark text for contrast on primary */
+    --secondary: 0 0% 14.9%; /* Dark gray for secondary elements */
+    --secondary-foreground: 0 0% 98%; /* Light text for contrast */
+    
+    /* Accent colors */
+    --muted: 0 0% 14.9%; /* Dark gray for muted elements */
+    --muted-foreground: 0 0% 63.9%; /* Medium gray text */
+    --accent: 0 0% 14.9%; /* Dark gray for accent elements */
+    --accent-foreground: 0 0% 98%; /* Light text */
+    
+    /* Call to action */
+    --destructive: 0 62.8% 30.6%; /* Deep red */
+    --destructive-foreground: 0 0% 98%; /* Light text for buttons */
+    
+    /* Other UI elements */
+    --border: 0 0% 14.9%; /* Dark gray border color */
+    --input: 0 0% 14.9%; /* Dark gray input color */
+    --ring: 0 0% 83.1%; /* Light gray for focus rings */
+    
+    /* Chart colors */
+    --chart-1: 220 70% 50%; /* Blue */
+    --chart-2: 160 60% 45%; /* Green */
+    --chart-3: 30 80% 55%; /* Orange */
+    --chart-4: 280 65% 60%; /* Purple */
+    --chart-5: 340 75% 55%; /* Pink */
+    
+    /* Sidebar colors */
+    --sidebar-background: 240 5.9% 10%; /* Dark background for sidebar */
+    --sidebar-foreground: 240 4.8% 95.9%; /* Light text for sidebar */
+    --sidebar-primary: 224.3 76.3% 48%; /* Blue for primary sidebar elements */
+    --sidebar-primary-foreground: 0 0% 100%; /* White text */
+    --sidebar-accent: 336 70% 20%; /* Dark pink for hover effect */
+    --sidebar-accent-foreground: 336 80% 70%; /* Light pink for text on hover */
+    --sidebar-border: 240 3.7% 15.9%; /* Dark border for sidebar */
+    --sidebar-ring: 217.2 91.2% 59.8%; /* Blue highlight ring */
     
     /* Toast colors - fixed to ensure consistent appearance even in dark mode */
     --toast-background: 0 0% 100%; /* White background for all toasts */
     --toast-foreground: 0 0% 20%; /* Dark text for toasts */
     --toast-border: 0 0% 85%; /* Light border for toasts */
-    --toast-destructive-background: 0 84.2% 60.2%; /* Red background for destructive toasts */
     --toast-destructive-foreground: 0 0% 98%; /* White text for destructive toasts */
     --toast-destructive-border: 0 84.2% 55%; /* Darker red border for destructive toasts */
   }
@@ -132,4 +152,33 @@ body {
   background-color: #ef4444 !important;
   color: white !important;
   border-color: #dc2626 !important;
+}
+
+/* Custom beauty product theme styles */
+.beauty-cta-button {
+  background-color: #FF8C94 !important; /* Coral for CTA */
+  color: white !important;
+  transition: background-color 0.3s ease;
+}
+
+.beauty-cta-button:hover {
+  background-color: #FF7680 !important; /* Slightly darker Coral on hover */
+}
+
+.beauty-secondary-button {
+  background-color: #F5E6CC !important; /* Soft Gold */
+  color: #9D8189 !important; /* Deep Mauve */
+  transition: background-color 0.3s ease;
+}
+
+.beauty-secondary-button:hover {
+  background-color: #F0DCBB !important; /* Slightly darker Gold on hover */
+}
+
+.beauty-accent {
+  color: #CAD2C5 !important; /* Sage Green for accents */
+}
+
+.beauty-highlight {
+  color: #E8DFF5 !important; /* Light Lavender for highlights */
 }
