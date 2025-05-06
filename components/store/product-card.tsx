@@ -63,7 +63,7 @@ export default function ProductCard({ product, isBestSeller }: ProductCardProps)
       })
     }
   }
-
+  
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
@@ -87,9 +87,9 @@ export default function ProductCard({ product, isBestSeller }: ProductCardProps)
   }
 
   return (
-    <Card className="group overflow-hidden h-full flex flex-col">
+    <Card className="group overflow-hidden h-full flex flex-col hover:shadow-md transition-shadow duration-300 border-[#F7CAD0]/20 hover:border-[#F7CAD0]/60">
       <Link href={`/store/products/${product.id}`} className="flex-1 flex flex-col">
-        <div className="relative aspect-square overflow-hidden bg-gray-100 dark:bg-gray-800">
+        <div className="relative aspect-square overflow-hidden bg-[#FFF1F3] dark:bg-gray-800">
           {product.image ? (
             <Image
               src={product.image}
@@ -98,14 +98,14 @@ export default function ProductCard({ product, isBestSeller }: ProductCardProps)
               className="object-cover transition-transform duration-300 group-hover:scale-105"
             />
           ) : (
-            <div className="flex h-full items-center justify-center bg-gray-100 dark:bg-gray-800">
-              <ShoppingBag className="h-12 w-12 text-gray-300 dark:text-gray-600" />
+            <div className="flex h-full items-center justify-center bg-[#FFF1F3] dark:bg-gray-800">
+              <ShoppingBag className="h-12 w-12 text-[#F7CAD0] dark:text-[#F7CAD0]/60" />
             </div>
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           
           {isBestSeller && (
-            <div className="absolute top-2 left-2 bg-pink-600 text-white px-2 py-1 rounded-full text-xs font-medium z-10">
+            <div className="absolute top-2 left-2 bg-[#FF8C94] text-white px-2 py-1 rounded-full text-xs font-medium z-10 shadow-sm">
               Best Seller
             </div>
           )}
@@ -114,29 +114,29 @@ export default function ProductCard({ product, isBestSeller }: ProductCardProps)
             <Button 
               variant="ghost" 
               size="icon" 
-              className="rounded-full bg-white/80 backdrop-blur-sm hover:bg-white text-gray-700"
+              className="rounded-full bg-white/80 backdrop-blur-sm hover:bg-white text-gray-700 shadow-sm"
               onClick={handleToggleWishlist}
             >
-              <Heart className={cn("h-5 w-5", inWishlist && "fill-pink-500 text-pink-500")} />
+              <Heart className={cn("h-5 w-5", inWishlist && "fill-[#FF8C94] text-[#FF8C94]")} />
             </Button>
           </div>
         </div>
         
         <CardContent className="flex-1 p-4">
-          <div className="space-y-1">
-            <Badge variant="outline" className="font-normal text-xs text-muted-foreground">
+          <div className="space-y-2">
+            <Badge variant="outline" className="font-normal text-xs bg-[#FFE5D9]/30 text-[#9D8189] border-[#FFE5D9]">
               {product.category}
             </Badge>
-            <h3 className="font-medium text-lg line-clamp-1">{product.name}</h3>
+            <h3 className="font-medium text-lg line-clamp-1 mt-1">{product.name}</h3>
             <p className="text-sm text-muted-foreground line-clamp-2">{product.description}</p>
           </div>
         </CardContent>
         
         <CardFooter className="p-4 pt-0 flex items-center justify-between">
-          <p className="font-semibold text-lg">{formatCurrency(product.price)}</p>
+          <p className="font-semibold text-lg text-[#9D8189]">{formatCurrency(product.price)}</p>
           <Button 
             size="sm" 
-            className="rounded-full bg-pink-600 hover:bg-pink-700 text-white"
+            className="rounded-full beauty-cta-button"
             onClick={handleAddToCart}
           >
             <ShoppingBag className="h-4 w-4 mr-1" /> Add
@@ -145,4 +145,4 @@ export default function ProductCard({ product, isBestSeller }: ProductCardProps)
       </Link>
     </Card>
   )
-} 
+}
