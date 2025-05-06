@@ -50,8 +50,8 @@ const formSchema = z.object({
   stock: z.coerce.number().int().nonnegative({ message: "Stock must be a non-negative integer." }),
 })
 
-// Define the Pinata group ID for product images
-const PRODUCT_GROUP_ID = "db69246e-5c61-4f68-8af7-1da3c1ced4fb";
+// Define the Pinata group ID for product images from environment variable
+const PRODUCT_GROUP_ID = process.env.NEXT_PUBLIC_PRODUCT_GROUP_ID || "";
 
 interface ProductFormProps {
   product: Product | null
