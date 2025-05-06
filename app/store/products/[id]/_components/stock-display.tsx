@@ -58,7 +58,9 @@ export default function StockDisplay({ product, refreshInterval = 60000 }: Stock
       <div className="flex items-center gap-2">
         <Badge 
           variant={stock > 0 ? "outline" : "destructive"} 
-          className={`px-2 py-1 ${stock > 0 ? "border-green-500 text-green-700 bg-green-50" : ""}`}
+          className={`px-2 py-1 ${stock > 0 
+            ? "border-[#CAD2C5] text-[#9D8189] bg-[#CAD2C5]/20" 
+            : "bg-[#984447] border-[#984447] text-white"}`}
         >
           {stock > 0 ? (
             <div className="flex items-center gap-1">
@@ -76,7 +78,7 @@ export default function StockDisplay({ product, refreshInterval = 60000 }: Stock
         {isLoading && (
           <span className="text-sm text-muted-foreground flex items-center gap-1">
             <Loader2 className="h-3 w-3 animate-spin" />
-            Updating...
+            <span className="beauty-highlight">Updating...</span>
           </span>
         )}
         
@@ -88,10 +90,10 @@ export default function StockDisplay({ product, refreshInterval = 60000 }: Stock
       </div>
       
       {stock > 0 && (
-        <span className="text-sm text-muted-foreground">
+        <span className="text-sm text-[#9D8189]">
           {stock} {stock === 1 ? "unit" : "units"} available
         </span>
       )}
     </div>
   )
-} 
+}

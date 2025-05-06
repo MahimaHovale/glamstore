@@ -21,14 +21,14 @@ interface AddToWishlistButtonProps {
 
 export default function AddToWishlistButton({ product, variant = "default" }: AddToWishlistButtonProps) {
   const { isInWishlist, addItem, removeItem } = useWishlist()
-  const [isAdding, setIsAdding] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   
   const inWishlist = isInWishlist(product.id)
-
-  const handleToggleWishlist = () => {
-    setIsAdding(true)
-    
+  
+  const handleToggleWishlist = async () => {
     try {
+      setIsLoading(true)
+      
       if (inWishlist) {
         removeItem(product.id)
         toast({
@@ -39,62 +39,69 @@ export default function AddToWishlistButton({ product, variant = "default" }: Ad
           id: product.id,
           name: product.name,
           price: product.price,
-          image: product.image || "",
+          description: product.description,
           category: product.category,
-          description: product.description
+          image: product.image || "",
         })
         toast({
           description: "Product added to wishlist",
         })
       }
     } catch (error) {
+      console.error(error)
       toast({
-        title: "Error",
-        description: "Could not update wishlist",
+        title: "Something went wrong",
+        description: "Failed to update wishlist",
         variant: "destructive",
       })
     } finally {
-      setIsAdding(false)
+      setIsLoading(false)
     }
   }
-
+  
   if (variant === "icon") {
     return (
       <Button 
-        size="icon" 
         variant="ghost" 
-        className="rounded-full bg-white/80 backdrop-blur-sm hover:bg-white"
+        size="icon" 
+        className="rounded-full bg-white/80 backdrop-blur-sm hover:bg-white text-gray-700"
         onClick={handleToggleWishlist}
-        disabled={isAdding}
+        disabled={isLoading}
       >
-        <Heart 
-          className={cn(
-            "h-5 w-5", 
-            inWishlist ? "fill-pink-500 text-pink-500" : "text-gray-700"
-          )} 
-        />
+        <Heart className={cn("h-5 w-5", inWishlist && "fill-[#FF8C94] text-[#FF8C94]")} />
+        <span className="sr-only">Add to wishlist</span>
       </Button>
     )
   }
-
+  
+  if (variant === "outline") {
+    return (
+      <Button 
+        variant="outline" 
+        className={cn(
+          "w-full border-[#F7CAD0] text-[#9D8189]",
+          inWishlist && "bg-[#F7CAD0]/10"
+        )}
+        onClick={handleToggleWishlist}
+        disabled={isLoading}
+      >
+        <Heart className={cn("mr-2 h-5 w-5", inWishlist && "fill-[#FF8C94] text-[#FF8C94]")} />
+        {inWishlist ? "Remove from Wishlist" : "Save to Wishlist"}
+      </Button>
+    )
+  }
+  
   return (
-    <Button 
-      variant={variant} 
-      size="lg" 
+    <Button
       className={cn(
-        "gap-2",
-        inWishlist && variant === "outline" && "border-pink-200 text-pink-700 bg-pink-50"
+        "bg-[#F5E6CC] hover:bg-[#F0DCBB] text-[#9D8189]",
+        inWishlist && "bg-[#F7CAD0]/20 hover:bg-[#F7CAD0]/30"
       )}
       onClick={handleToggleWishlist}
-      disabled={isAdding}
+      disabled={isLoading}
     >
-      <Heart 
-        className={cn(
-          "h-5 w-5", 
-          inWishlist && "fill-pink-500"
-        )} 
-      />
+      <Heart className={cn("mr-2 h-5 w-5", inWishlist && "fill-[#FF8C94] text-[#FF8C94]")} />
       {inWishlist ? "Remove from Wishlist" : "Add to Wishlist"}
     </Button>
   )
-} 
+}

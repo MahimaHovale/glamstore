@@ -87,14 +87,25 @@ export default function AddToCartButton({ product }: { product: Product }) {
   return (
     <>
       <div className="flex items-center space-x-4 mb-4">
-        <Button variant="outline" size="icon" onClick={decrementQuantity} disabled={quantity <= 1 || currentStock === 0}>
+        <Button 
+          variant="outline" 
+          size="icon" 
+          onClick={decrementQuantity} 
+          disabled={quantity <= 1 || currentStock === 0}
+          className="border-[#F7CAD0] text-[#9D8189] hover:bg-[#F7CAD0]/10"
+        >
           <Minus className="h-4 w-4" />
         </Button>
-        <span className="text-lg font-medium">{quantity}</span>
-        <Button variant="outline" size="icon" onClick={incrementQuantity} disabled={quantity >= currentStock || currentStock === 0}>
+        <span className="text-lg font-medium text-[#9D8189]">{quantity}</span>
+        <Button 
+          variant="outline" 
+          size="icon" 
+          onClick={incrementQuantity} 
+          disabled={quantity >= currentStock || currentStock === 0}
+          className="border-[#F7CAD0] text-[#9D8189] hover:bg-[#F7CAD0]/10"
+        >
           <Plus className="h-4 w-4" />
         </Button>
-        
         {isLoading && <span className="text-xs text-muted-foreground">Updating...</span>}
       </div>
 
@@ -106,7 +117,7 @@ export default function AddToCartButton({ product }: { product: Product }) {
       )}
 
       <Button 
-        className="w-full" 
+        className="beauty-cta-button w-full" 
         size="lg" 
         onClick={handleAddToCart} 
         disabled={currentStock === 0}
@@ -116,4 +127,4 @@ export default function AddToCartButton({ product }: { product: Product }) {
       </Button>
     </>
   )
-} 
+}
