@@ -1,68 +1,56 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useUser } from "@clerk/nextjs";
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
-import { useCart } from "@/lib/cart-provider";
-import { Loader2 } from "lucide-react";
+import * as React from "react"
+import { useRouter } from "next/navigation"
+import { Button } from "@/components/ui/button"
+import { useCart } from "@/lib/cart-provider"
+import { useUser } from "@clerk/nextjs"
+import { toast } from "@/components/ui/use-toast"
 
-interface CheckoutButtonProps {
-  className?: string;
+interface CheckoutButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  className?: string
+  children?: React.ReactNode
 }
 
-export function CheckoutButton({ className }: CheckoutButtonProps) {
-  const { isSignedIn } = useUser();
-  const { cart } = useCart();
-  const router = useRouter();
-  const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
+export function CheckoutButton({ className, children, ...props }: CheckoutButtonProps) {
+  const { cart } = useCart()
+  const { isSignedIn } = useUser()
+  const router = useRouter()
 
-  const handleCheckout = async () => {
+  const handleCheckout = () => {
     if (!isSignedIn) {
       toast({
         title: "Sign in required",
-        description: "Please sign in to complete your purchase",
-        variant: "destructive",
-      });
-      router.push("/sign-in?redirect_url=/store/cart");
-      return;
-    }
-
-    setIsLoading(true);
-
-    try {
-      // Redirect to the shipping page
-      router.push("/store/checkout/shipping");
-    } catch (error) {
-      console.error("Navigation error:", error);
+        description: "You need to sign in to checkout",
+      })
       
-      // Display user-friendly error message
-      toast({
-        title: "Error",
-        description: "There was an error proceeding to checkout. Please try again.",
-        variant: "destructive",
-      });
-      setIsLoading(false);
+      // Store intent to checkout
+      localStorage.setItem("checkoutIntent", "true")
+      
+      // Redirect to sign in
+      router.push("/sign-in")
+      return
     }
-  };
+    
+    if (cart.length === 0) {
+      toast({
+        title: "Cart is empty",
+        description: "Add items to your cart to checkout",
+      })
+      return
+    }
+    
+    // Proceed to shipping page
+    router.push("/store/checkout/shipping")
+  }
 
   return (
     <Button 
-      className={className} 
-      size="lg" 
       onClick={handleCheckout} 
-      disabled={isLoading || cart.length === 0}
+      className={`beauty-cta-button hover:shadow-md transition-shadow ${className}`}
+      {...props}
     >
-      {isLoading ? (
-        <>
-          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          Processing...
-        </>
-      ) : (
-        "Checkout"
-      )}
+      {children || "Checkout"}
     </Button>
-  );
+  )
 }
