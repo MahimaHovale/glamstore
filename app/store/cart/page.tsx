@@ -33,19 +33,17 @@ export default function CartPage() {
               strokeWidth="1.5"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="mx-auto text-muted-foreground mb-4"
+              className="mx-auto text-[#F7CAD0] mb-4"
             >
               <circle cx="8" cy="21" r="1" />
               <circle cx="19" cy="21" r="1" />
               <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
             </svg>
           </div>
-          <h1 className="text-3xl font-bold mb-4">Your cart is empty</h1>
+          <h1 className="text-3xl font-bold mb-4 text-[#9D8189]">Your cart is empty</h1>
           <p className="text-muted-foreground mb-8">Add some products to your cart to continue shopping.</p>
           <Link href="/store/products">
-            <Button 
-              className="bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white px-8 py-2"
-            >
+            <Button className="beauty-cta-button px-8 py-2">
               Browse Products
             </Button>
           </Link>
@@ -56,47 +54,49 @@ export default function CartPage() {
 
   return (
     <div className="container py-8">
-      <h1 className="text-3xl font-bold mb-6">Your Cart</h1>
+      <h1 className="text-3xl font-bold mb-6 text-[#9D8189]">Your Cart</h1>
 
       <div className="grid gap-8 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>Cart Items</CardTitle>
+          <Card className="border-[#F7CAD0]/20">
+            <CardHeader className="border-b border-[#F7CAD0]/10">
+              <CardTitle className="text-[#9D8189]">Cart Items</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 pt-6">
               {cart.map((item) => (
-                <div key={item.product.id} className="flex flex-col sm:flex-row gap-4 py-4">
+                <div key={item.product.id} className="flex flex-col sm:flex-row gap-4 py-4 border-b border-[#F7CAD0]/10 last:border-0">
                   <div className="flex-shrink-0">
-                    <Image
-                      src={item.product.image || "/placeholder.svg"}
-                      alt={item.product.name}
-                      width={100}
-                      height={100}
-                      className="rounded-md object-cover"
-                    />
+                    <div className="bg-[#FFF1F3] rounded-md p-1">
+                      <Image
+                        src={item.product.image || "/placeholder.svg"}
+                        alt={item.product.name}
+                        width={100}
+                        height={100}
+                        className="rounded-md object-cover"
+                      />
+                    </div>
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-semibold">{item.product.name}</h3>
+                    <h3 className="font-semibold text-[#9D8189]">{item.product.name}</h3>
                     <p className="text-sm text-muted-foreground">{item.product.category}</p>
-                    <p className="font-medium mt-1">{formatCurrency(item.product.price)}</p>
+                    <p className="font-medium mt-1 text-[#9D8189]">{formatCurrency(item.product.price)}</p>
                   </div>
                   <div className="flex flex-row sm:flex-col items-center sm:items-end gap-4">
                     <div className="flex items-center gap-2">
                       <Button
                         variant="outline"
                         size="icon"
-                        className="h-8 w-8"
+                        className="h-8 w-8 border-[#F7CAD0] text-[#9D8189] hover:bg-[#F7CAD0]/10"
                         onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
                         disabled={item.quantity <= 1}
                       >
                         <Minus className="h-3 w-3" />
                       </Button>
-                      <span className="w-8 text-center">{item.quantity}</span>
+                      <span className="w-8 text-center text-[#9D8189]">{item.quantity}</span>
                       <Button
                         variant="outline"
                         size="icon"
-                        className="h-8 w-8"
+                        className="h-8 w-8 border-[#F7CAD0] text-[#9D8189] hover:bg-[#F7CAD0]/10"
                         onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
                         disabled={item.quantity >= item.product.stock}
                       >
@@ -104,7 +104,7 @@ export default function CartPage() {
                       </Button>
                     </div>
                     <Button variant="ghost" size="icon" onClick={() => removeFromCart(item.product.id)}>
-                      <Trash className="h-4 w-4" />
+                      <Trash className="h-4 w-4 text-[#984447]" />
                     </Button>
                   </div>
                 </div>
@@ -114,27 +114,27 @@ export default function CartPage() {
         </div>
 
         <div>
-          <Card>
-            <CardHeader>
-              <CardTitle>Order Summary</CardTitle>
+          <Card className="border-[#F7CAD0]/20">
+            <CardHeader className="border-b border-[#F7CAD0]/10">
+              <CardTitle className="text-[#9D8189]">Order Summary</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 pt-6">
               <div className="flex justify-between">
-                <span>Subtotal</span>
-                <span>{formatCurrency(getCartTotal())}</span>
+                <span className="text-[#9D8189]">Subtotal</span>
+                <span className="text-[#9D8189]">{formatCurrency(getCartTotal())}</span>
               </div>
               <div className="flex justify-between">
-                <span>Shipping</span>
-                <span>Free</span>
+                <span className="text-[#9D8189]">Shipping</span>
+                <span className="text-[#CAD2C5]">Free</span>
               </div>
-              <Separator />
+              <Separator className="bg-[#F7CAD0]/20" />
               <div className="flex justify-between font-bold">
-                <span>Total</span>
-                <span>{formatCurrency(getCartTotal())}</span>
+                <span className="text-[#9D8189]">Total</span>
+                <span className="text-[#9D8189]">{formatCurrency(getCartTotal())}</span>
               </div>
             </CardContent>
             <CardFooter>
-              <CheckoutButton className="w-full bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white" />
+              <CheckoutButton className="w-full" />
             </CardFooter>
           </Card>
         </div>
