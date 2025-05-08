@@ -14,113 +14,113 @@ body {
 
 @layer base {
   :root {
-    /* Light mode color palette with beauty product colors */
-    --background: 351 100% 95%; /* #FFF1F3 - Lighter version of Soft Rose Pink */
-    --foreground: 325 15% 30%; /* Dark mauve text for contrast */
-    --card: 0 0% 100%; /* #FFFFFF - Clean White */
-    --card-foreground: 325 15% 30%; /* Dark mauve text for contrast */
-    --popover: 0 0% 100%; /* #FFFFFF - Clean White */
-    --popover-foreground: 325 15% 30%; /* Dark mauve text for contrast */
+    /* Light mode monochrome color palette */
+    --background: 0 0% 98%; /* #FAFAFA - Nearly White */
+    --foreground: 0 0% 10%; /* #1A1A1A - Nearly Black */
+    --card: 0 0% 100%; /* #FFFFFF - Pure White */
+    --card-foreground: 0 0% 10%; /* #1A1A1A - Nearly Black */
+    --popover: 0 0% 100%; /* #FFFFFF - Pure White */
+    --popover-foreground: 0 0% 10%; /* #1A1A1A - Nearly Black */
     
     /* Main color scheme */
-    --primary: 351 69% 91%; /* #F7CAD0 - Soft Rose Pink */
-    --primary-foreground: 325 15% 30%; /* Dark text for contrast on pink */
-    --secondary: 22 100% 92%; /* #FFE5D9 - Warm Peach */
-    --secondary-foreground: 325 15% 30%; /* Dark text for contrast */
+    --primary: 0 0% 9%; /* #171717 - Very Dark Gray (nearly black) */
+    --primary-foreground: 0 0% 98%; /* #FAFAFA - Nearly White */
+    --secondary: 0 0% 96%; /* #F5F5F5 - Very Light Gray */
+    --secondary-foreground: 0 0% 9%; /* #171717 - Very Dark Gray */
     
     /* Accent colors */
-    --muted: 120 15% 85%; /* #CAD2C5 - Sage Green */
-    --muted-foreground: 325 15% 30%; /* Dark text */
-    --accent: 44 73% 88%; /* #F5E6CC - Soft Gold */
-    --accent-foreground: 325 15% 30%; /* Dark text */
+    --muted: 0 0% 92%; /* #EBEBEB - Light Gray */
+    --muted-foreground: 0 0% 40%; /* #666666 - Medium Gray */
+    --accent: 0 0% 94%; /* #F0F0F0 - Light Gray */
+    --accent-foreground: 0 0% 12%; /* #1F1F1F - Dark Gray */
     
     /* Call to action */
-    --destructive: 359 100% 69%; /* #FF8C94 - Coral */
-    --destructive-foreground: 0 0% 100%; /* White text for buttons */
+    --destructive: 0 0% 20%; /* #333333 - Dark Gray */
+    --destructive-foreground: 0 0% 98%; /* #FAFAFA - Nearly White */
     
     /* Other UI elements */
-    --border: 351 30% 86%; /* Lighter version of main pink */
-    --input: 351 30% 86%; /* Lighter version of main pink */
-    --ring: 351 69% 91%; /* Soft Rose Pink */
+    --border: 0 0% 88%; /* #E0E0E0 - Light Gray */
+    --input: 0 0% 88%; /* #E0E0E0 - Light Gray */
+    --ring: 0 0% 76%; /* #C2C2C2 - Medium Gray */
     
-    /* Chart colors */
-    --chart-1: 12 76% 61%; /* Original chart color */
-    --chart-2: 173 58% 39%; /* Original chart color */
-    --chart-3: 197 37% 24%; /* Original chart color */
-    --chart-4: 43 74% 66%; /* Original chart color */
-    --chart-5: 27 87% 67%; /* Original chart color */
+    /* Chart colors - monochrome with different shades */
+    --chart-1: 0 0% 20%; /* #333333 - Dark Gray */
+    --chart-2: 0 0% 35%; /* #595959 - Medium-Dark Gray */
+    --chart-3: 0 0% 50%; /* #808080 - Medium Gray */
+    --chart-4: 0 0% 65%; /* #A6A6A6 - Medium-Light Gray */
+    --chart-5: 0 0% 80%; /* #CCCCCC - Light Gray */
     
     --radius: 0.5rem;
-    --sidebar-background: 0 0% 98%; /* Original sidebar background - white */
-    --sidebar-foreground: 240 5.3% 26.1%; /* Original sidebar foreground */
-    --sidebar-primary: 240 5.9% 10%; /* Original sidebar primary */
-    --sidebar-primary-foreground: 0 0% 98%; /* Original sidebar primary foreground */
-    --sidebar-accent: 336 100% 95%; /* Light pink for hover effect */
-    --sidebar-accent-foreground: 336 80% 50%; /* Darker pink for text on hover */
-    --sidebar-border: 220 13% 91%; /* Original sidebar border */
-    --sidebar-ring: 217.2 91.2% 59.8%; /* Original sidebar ring */
+    --sidebar-background: 0 0% 100%; /* White sidebar background */
+    --sidebar-foreground: 0 0% 10%; /* Nearly Black text */
+    --sidebar-primary: 0 0% 9%; /* Very Dark Gray (nearly black) */
+    --sidebar-primary-foreground: 0 0% 98%; /* Nearly White */
+    --sidebar-accent: 0 0% 94%; /* Light Gray */
+    --sidebar-accent-foreground: 0 0% 12%; /* Dark Gray */
+    --sidebar-border: 0 0% 88%; /* Light Gray */
+    --sidebar-ring: 0 0% 76%; /* Medium Gray */
     
-    /* Toast colors - fixed to ensure consistent appearance */
+    /* Toast colors - clean monochrome */
     --toast-background: 0 0% 100%; /* White background for all toasts */
-    --toast-foreground: 0 0% 20%; /* Dark text for toasts */
-    --toast-border: 0 0% 92%; /* Light border for toasts */
-    --toast-destructive-background: 0 84.2% 60.2%; /* Red background for destructive toasts */
-    --toast-destructive-foreground: 0 0% 98%; /* White text for destructive toasts */
-    --toast-destructive-border: 0 84.2% 55%; /* Darker red border for destructive toasts */
+    --toast-foreground: 0 0% 10%; /* Nearly Black text for toasts */
+    --toast-border: 0 0% 88%; /* Light Gray border for toasts */
+    --toast-destructive-background: 0 0% 20%; /* Dark Gray background for destructive */
+    --toast-destructive-foreground: 0 0% 98%; /* Nearly White text for destructive */
+    --toast-destructive-border: 0 0% 15%; /* Darker Gray border for destructive */
   }
   .dark {
-    /* True black dark mode color palette */
-    --background: 0 0% 3.9%; /* True black background */
-    --foreground: 0 0% 98%; /* Light text for contrast */
-    --card: 0 0% 3.9%; /* True black for cards */
-    --card-foreground: 0 0% 98%; /* Light text for contrast */
-    --popover: 0 0% 3.9%; /* True black for popovers */
-    --popover-foreground: 0 0% 98%; /* Light text for contrast */
+    /* True monochrome dark mode color palette */
+    --background: 0 0% 4%; /* #0A0A0A - Nearly Black */
+    --foreground: 0 0% 96%; /* #F5F5F5 - Nearly White */
+    --card: 0 0% 6%; /* #0F0F0F - Very Dark Gray */
+    --card-foreground: 0 0% 96%; /* #F5F5F5 - Nearly White */
+    --popover: 0 0% 6%; /* #0F0F0F - Very Dark Gray */
+    --popover-foreground: 0 0% 96%; /* #F5F5F5 - Nearly White */
     
     /* Main color scheme */
-    --primary: 0 0% 98%; /* White for primary elements */
-    --primary-foreground: 0 0% 9%; /* Dark text for contrast on primary */
-    --secondary: 0 0% 14.9%; /* Dark gray for secondary elements */
-    --secondary-foreground: 0 0% 98%; /* Light text for contrast */
+    --primary: 0 0% 96%; /* #F5F5F5 - Nearly White */
+    --primary-foreground: 0 0% 5%; /* #0D0D0D - Nearly Black */
+    --secondary: 0 0% 12%; /* #1F1F1F - Dark Gray */
+    --secondary-foreground: 0 0% 96%; /* #F5F5F5 - Nearly White */
     
     /* Accent colors */
-    --muted: 0 0% 14.9%; /* Dark gray for muted elements */
-    --muted-foreground: 0 0% 63.9%; /* Medium gray text */
-    --accent: 0 0% 14.9%; /* Dark gray for accent elements */
-    --accent-foreground: 0 0% 98%; /* Light text */
+    --muted: 0 0% 12%; /* #1F1F1F - Dark Gray */
+    --muted-foreground: 0 0% 65%; /* #A6A6A6 - Medium-Light Gray */
+    --accent: 0 0% 14%; /* #242424 - Dark Gray */
+    --accent-foreground: 0 0% 96%; /* #F5F5F5 - Nearly White */
     
     /* Call to action */
-    --destructive: 0 62.8% 30.6%; /* Deep red */
-    --destructive-foreground: 0 0% 98%; /* Light text for buttons */
+    --destructive: 0 0% 80%; /* #CCCCCC - Light Gray */
+    --destructive-foreground: 0 0% 5%; /* #0D0D0D - Nearly Black */
     
     /* Other UI elements */
-    --border: 0 0% 14.9%; /* Dark gray border color */
-    --input: 0 0% 14.9%; /* Dark gray input color */
-    --ring: 0 0% 83.1%; /* Light gray for focus rings */
+    --border: 0 0% 15%; /* #262626 - Dark Gray */
+    --input: 0 0% 15%; /* #262626 - Dark Gray */
+    --ring: 0 0% 70%; /* #B3B3B3 - Light Gray */
     
-    /* Chart colors */
-    --chart-1: 220 70% 50%; /* Blue */
-    --chart-2: 160 60% 45%; /* Green */
-    --chart-3: 30 80% 55%; /* Orange */
-    --chart-4: 280 65% 60%; /* Purple */
-    --chart-5: 340 75% 55%; /* Pink */
+    /* Chart colors - monochrome with different shades for dark mode */
+    --chart-1: 0 0% 90%; /* #E6E6E6 - Very Light Gray */
+    --chart-2: 0 0% 75%; /* #BFBFBF - Light Gray */
+    --chart-3: 0 0% 60%; /* #999999 - Medium Gray */
+    --chart-4: 0 0% 45%; /* #737373 - Medium-Dark Gray */
+    --chart-5: 0 0% 30%; /* #4D4D4D - Dark Gray */
     
     /* Sidebar colors */
-    --sidebar-background: 240 5.9% 10%; /* Dark background for sidebar */
-    --sidebar-foreground: 240 4.8% 95.9%; /* Light text for sidebar */
-    --sidebar-primary: 224.3 76.3% 48%; /* Blue for primary sidebar elements */
-    --sidebar-primary-foreground: 0 0% 100%; /* White text */
-    --sidebar-accent: 336 70% 20%; /* Dark pink for hover effect */
-    --sidebar-accent-foreground: 336 80% 70%; /* Light pink for text on hover */
-    --sidebar-border: 240 3.7% 15.9%; /* Dark border for sidebar */
-    --sidebar-ring: 217.2 91.2% 59.8%; /* Blue highlight ring */
+    --sidebar-background: 0 0% 5%; /* Nearly Black sidebar */
+    --sidebar-foreground: 0 0% 92%; /* Very Light Gray text */
+    --sidebar-primary: 0 0% 92%; /* Very Light Gray */
+    --sidebar-primary-foreground: 0 0% 5%; /* Nearly Black */
+    --sidebar-accent: 0 0% 14%; /* Dark Gray */
+    --sidebar-accent-foreground: 0 0% 85%; /* Light Gray */
+    --sidebar-border: 0 0% 15%; /* Dark Gray border */
+    --sidebar-ring: 0 0% 70%; /* Light Gray ring */
     
-    /* Toast colors - fixed to ensure consistent appearance even in dark mode */
-    --toast-background: 0 0% 100%; /* White background for all toasts */
-    --toast-foreground: 0 0% 20%; /* Dark text for toasts */
-    --toast-border: 0 0% 85%; /* Light border for toasts */
-    --toast-destructive-foreground: 0 0% 98%; /* White text for destructive toasts */
-    --toast-destructive-border: 0 84.2% 55%; /* Darker red border for destructive toasts */
+    /* Toast colors - consistent monochrome in dark mode too */
+    --toast-background: 0 0% 10%; /* Dark background for all toasts */
+    --toast-foreground: 0 0% 96%; /* Nearly White text for toasts */
+    --toast-border: 0 0% 15%; /* Dark Gray border for toasts */
+    --toast-destructive-foreground: 0 0% 96%; /* Nearly White text for destructive toasts */
+    --toast-destructive-border: 0 0% 75%; /* Light Gray border for destructive toasts */
   }
 }
 
@@ -133,52 +133,77 @@ body {
   }
 }
 
-/* Ensure the store homepage uses the pink background */
+/* Ensure the store homepage uses the background color */
 .store-homepage {
   background-color: hsl(var(--background));
 }
 
-/* Override toast styling to ensure it's always white with proper contrast */
+/* Override toast styling for monochrome theme */
 [role="status"][data-sonner-toast],
 [role="alert"][data-sonner-toast],
 [data-sonner-toast] {
   background-color: white !important;
-  color: #333 !important;
-  border-color: #e5e5e5 !important;
+  color: #1A1A1A !important;
+  border-color: #E0E0E0 !important;
+}
+
+.dark [role="status"][data-sonner-toast],
+.dark [role="alert"][data-sonner-toast],
+.dark [data-sonner-toast] {
+  background-color: #0F0F0F !important;
+  color: #F5F5F5 !important;
+  border-color: #262626 !important;
 }
 
 [data-sonner-toast][data-type="error"],
 [data-sonner-toast][data-variant="destructive"] {
-  background-color: #ef4444 !important;
-  color: white !important;
-  border-color: #dc2626 !important;
+  background-color: #333333 !important;
+  color: #FAFAFA !important;
+  border-color: #1A1A1A !important;
 }
 
-/* Custom beauty product theme styles */
-.beauty-cta-button {
-  background-color: #FF8C94 !important; /* Coral for CTA */
-  color: white !important;
-  transition: background-color 0.3s ease;
+.dark [data-sonner-toast][data-type="error"],
+.dark [data-sonner-toast][data-variant="destructive"] {
+  background-color: #1A1A1A !important;
+  color: #FAFAFA !important;
+  border-color: #666666 !important;
 }
 
-.beauty-cta-button:hover {
-  background-color: #FF7680 !important; /* Slightly darker Coral on hover */
+/* Monochrome theme button styles */
+.mono-primary-button {
+  background-color: #171717 !important;
+  color: #FAFAFA !important;
+  transition: background-color 0.2s ease;
 }
 
-.beauty-secondary-button {
-  background-color: #F5E6CC !important; /* Soft Gold */
-  color: #9D8189 !important; /* Deep Mauve */
-  transition: background-color 0.3s ease;
+.mono-primary-button:hover {
+  background-color: #333333 !important;
 }
 
-.beauty-secondary-button:hover {
-  background-color: #F0DCBB !important; /* Slightly darker Gold on hover */
+.dark .mono-primary-button {
+  background-color: #F5F5F5 !important;
+  color: #0D0D0D !important;
 }
 
-.beauty-accent {
-  color: #CAD2C5 !important; /* Sage Green for accents */
+.dark .mono-primary-button:hover {
+  background-color: #D9D9D9 !important;
 }
 
-.beauty-highlight {
-  color: #E8DFF5 !important; /* Light Lavender for highlights */
+.mono-secondary-button {
+  background-color: #F0F0F0 !important;
+  color: #1A1A1A !important;
+  transition: background-color 0.2s ease;
+}
+
+.mono-secondary-button:hover {
+  background-color: #E0E0E0 !important;
+}
+
+.dark .mono-secondary-button {
+  background-color: #1F1F1F !important;
+  color: #F5F5F5 !important;
+}
+
+.dark .mono-secondary-button:hover {
+  background-color: #2A2A2A !important;
 }
