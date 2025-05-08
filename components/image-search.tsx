@@ -239,7 +239,7 @@ export const ImageSearch = () => {
         </form>
       </div>
       
-      {imageDescription && (
+      {/* {imageDescription && (
         <div className="mt-4 md:mt-6 p-3 md:p-4 bg-muted rounded-lg">
           <h3 className="text-base md:text-lg font-semibold mb-2">AI Analysis</h3>
           <p className="text-xs md:text-sm">{imageDescription}</p>
@@ -254,7 +254,7 @@ export const ImageSearch = () => {
             </div>
           )}
         </div>
-      )}
+      )} */}
       
       {results.length > 0 && (
         <div className="mt-6 md:mt-8">
