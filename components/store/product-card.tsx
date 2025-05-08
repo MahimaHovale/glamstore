@@ -87,9 +87,9 @@ export default function ProductCard({ product, isBestSeller }: ProductCardProps)
   }
 
   return (
-    <Card className="group overflow-hidden h-full flex flex-col hover:shadow-md transition-shadow duration-300 border-[#F7CAD0]/20 hover:border-[#F7CAD0]/60">
+    <Card className="group overflow-hidden h-full flex flex-col hover:shadow-md transition-shadow duration-300 border-[#F7CAD0]/20 hover:border-[#F7CAD0]/60 rounded-xl">
       <Link href={`/store/products/${product.id}`} className="flex-1 flex flex-col">
-        <div className="relative aspect-square overflow-hidden bg-[#FFF1F3] dark:bg-gray-800">
+        <div className="relative aspect-square overflow-hidden bg-[#FFF1F3] dark:bg-gray-800 rounded-t-xl">
           {product.image ? (
             <Image
               src={product.image}
@@ -124,7 +124,7 @@ export default function ProductCard({ product, isBestSeller }: ProductCardProps)
         
         <CardContent className="flex-1 p-4">
           <div className="space-y-2">
-            <Badge variant="outline" className="font-normal text-xs bg-[#FFE5D9]/30 text-[#9D8189] border-[#FFE5D9]">
+            <Badge variant="outline" className="font-normal text-xs bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700 rounded-lg">
               {product.category}
             </Badge>
             <h3 className="font-medium text-lg line-clamp-1 mt-1">{product.name}</h3>
@@ -133,7 +133,9 @@ export default function ProductCard({ product, isBestSeller }: ProductCardProps)
         </CardContent>
         
         <CardFooter className="p-4 pt-0 flex items-center justify-between">
-          <p className="font-semibold text-lg text-[#9D8189]">{formatCurrency(product.price)}</p>
+          <div className="mt-1 font-medium text-black dark:text-white">
+            {formatCurrency(product.price)}
+          </div>
           <Button 
             size="sm" 
             className="rounded-full beauty-cta-button"
