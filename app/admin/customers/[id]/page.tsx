@@ -274,10 +274,10 @@ export default function CustomerDetailPage() {
                         <td className="p-2 text-right">
                           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
                             ${
-                              order.status === 'completed' ? 'bg-green-50 text-green-700' :
-                              order.status === 'processing' ? 'bg-blue-50 text-blue-700' :
-                              order.status === 'pending' ? 'bg-yellow-50 text-yellow-700' :
-                              'bg-gray-50 text-gray-700'
+                              order.status === 'completed' ? 'bg-gray-500 text-white dark:bg-gray-500 dark:text-white' :
+                              order.status === 'processing' ? 'bg-gray-300 text-gray-700 dark:bg-gray-700 dark:text-gray-300' :
+                              order.status === 'pending' ? 'bg-gray-200 text-gray-800 dark:bg-gray-800 dark:text-gray-200' :
+                              'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100'
                             }
                           `}>
                             {order.status || 'Unknown'}
