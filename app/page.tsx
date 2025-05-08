@@ -243,14 +243,14 @@ export default async function Home() {
                 <li><p className="text-sm text-muted-foreground">Phone: +1 (555) 123-4567</p></li>
               </ul>
             </div>
-            <div className="space-y-4">
+            {/* <div className="space-y-4">
               <h3 className="text-lg font-semibold text-pink-600">Newsletter</h3>
               <p className="text-sm text-muted-foreground">Subscribe for updates on new products and special promotions.</p>
               <div className="flex space-x-2">
                 <Input type="email" placeholder="Your email" className="max-w-[200px]" />
                 <Button size="sm" className="bg-pink-600 hover:bg-pink-700 text-white">Subscribe</Button>
               </div>
-            </div>
+            </div> */}
           </div>
           <div className="mt-8 border-t pt-6 flex flex-col sm:flex-row justify-between items-center">
             <p className="text-sm text-muted-foreground mb-4 sm:mb-0">© 2023 GlamStore. All rights reserved.</p>
