@@ -757,8 +757,8 @@ function PaymentPageContent() {
                           </div>
                         </Label>
                       </div>
-                      <div className="flex items-center space-x-2 p-3 border rounded-md hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-700 transition-colors mt-3">
-                        <RadioGroupItem value="cash_on_delivery" id="cash_on_delivery" className="dark:border-gray-500" />
+                      <div className="flex items-center space-x-2 p-3 border rounded-md hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800 transition-colors mt-3">
+                        <RadioGroupItem value="cash_on_delivery" id="cash_on_delivery" className="dark:border-gray-600" />
                         <Label htmlFor="cash_on_delivery" className="flex items-center cursor-pointer w-full">
                           <span className="font-medium dark:text-white">Cash on Delivery</span>
                           <span className="text-gray-500 dark:text-gray-400 text-sm ml-1">(Pay when you receive)</span>
