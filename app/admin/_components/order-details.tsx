@@ -78,17 +78,17 @@ export function OrderDetails({ order }: OrderDetailsProps) {
   const getStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
       case "pending":
-        return "bg-yellow-100 text-yellow-800"
+        return "bg-gray-200 text-gray-800 dark:bg-gray-800 dark:text-gray-200";
       case "processing":
-        return "bg-blue-100 text-blue-800"
+        return "bg-gray-300 text-gray-700 dark:bg-gray-700 dark:text-gray-300";
       case "shipped":
-        return "bg-purple-100 text-purple-800"
+        return "bg-gray-400 text-gray-800 dark:bg-gray-600 dark:text-gray-200";
       case "delivered":
-        return "bg-green-100 text-green-800"
+        return "bg-gray-500 text-white dark:bg-gray-500 dark:text-white";
       case "cancelled":
-        return "bg-red-100 text-red-800"
+        return "bg-gray-600 text-white dark:bg-gray-400 dark:text-gray-900";
       default:
-        return "bg-gray-100 text-gray-800"
+        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100";
     }
   }
 
@@ -210,10 +210,10 @@ export function OrderDetails({ order }: OrderDetailsProps) {
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Payment Status</span>
                 <Badge className={
-                  order.paymentStatus === 'completed' ? 'bg-green-100 text-green-800' :
-                  order.paymentStatus === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                  order.paymentStatus === 'failed' ? 'bg-red-100 text-red-800' :
-                  'bg-gray-100 text-gray-800'
+                  order.paymentStatus === 'completed' ? 'bg-gray-500 text-white dark:bg-gray-500 dark:text-white' :
+                  order.paymentStatus === 'pending' ? 'bg-gray-200 text-gray-800 dark:bg-gray-800 dark:text-gray-200' :
+                  order.paymentStatus === 'failed' ? 'bg-gray-600 text-white dark:bg-gray-400 dark:text-gray-900' :
+                  'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100'
                 }>
                   {order.paymentStatus?.charAt(0).toUpperCase() + order.paymentStatus?.slice(1) || 'Unknown'}
                 </Badge>
