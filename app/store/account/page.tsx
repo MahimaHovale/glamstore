@@ -95,15 +95,15 @@ export default function AccountPage() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "pending":
-        return "bg-yellow-100 text-yellow-800 hover:bg-yellow-100/80"
+        return "bg-gray-200 text-gray-800 hover:bg-gray-200/80 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-800/90";
       case "processing":
-        return "bg-blue-100 text-blue-800 hover:bg-blue-100/80"
+        return "bg-gray-300 text-gray-700 hover:bg-gray-300/80 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-700/90";
       case "shipped":
-        return "bg-purple-100 text-purple-800 hover:bg-purple-100/80"
+        return "bg-gray-400 text-gray-800 hover:bg-gray-400/80 dark:bg-gray-600 dark:text-gray-200 dark:hover:bg-gray-600/90";
       case "delivered":
-        return "bg-green-100 text-green-800 hover:bg-green-100/80"
+        return "bg-gray-500 text-white hover:bg-gray-500/80 dark:bg-gray-500 dark:text-white dark:hover:bg-gray-500/90";
       default:
-        return "bg-gray-100 text-gray-800 hover:bg-gray-100/80"
+        return "bg-gray-100 text-gray-800 hover:bg-gray-100/80 dark:bg-gray-900 dark:text-gray-100 dark:hover:bg-gray-900/90";
     }
   }
 
