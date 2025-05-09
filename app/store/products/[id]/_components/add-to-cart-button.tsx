@@ -92,17 +92,17 @@ export default function AddToCartButton({ product }: { product: Product }) {
           size="icon" 
           onClick={decrementQuantity} 
           disabled={quantity <= 1 || currentStock === 0}
-          className="border-[#F7CAD0] text-[#9D8189] hover:bg-[#F7CAD0]/10"
+          className="border-border text-foreground hover:bg-accent"
         >
           <Minus className="h-4 w-4" />
         </Button>
-        <span className="text-lg font-medium text-[#9D8189]">{quantity}</span>
+        <span className="text-lg font-medium text-foreground">{quantity}</span>
         <Button 
           variant="outline" 
           size="icon" 
           onClick={incrementQuantity} 
           disabled={quantity >= currentStock || currentStock === 0}
-          className="border-[#F7CAD0] text-[#9D8189] hover:bg-[#F7CAD0]/10"
+          className="border-border text-foreground hover:bg-accent"
         >
           <Plus className="h-4 w-4" />
         </Button>
@@ -110,14 +110,14 @@ export default function AddToCartButton({ product }: { product: Product }) {
       </div>
 
       {error && (
-        <div className="flex items-center gap-2 text-amber-600 mb-2 text-sm">
+        <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 mb-2 text-sm">
           <AlertCircle className="h-4 w-4" />
           <span>{error}</span>
         </div>
       )}
 
       <Button 
-        className="beauty-cta-button w-full" 
+        className="w-full" 
         size="lg" 
         onClick={handleAddToCart} 
         disabled={currentStock === 0}

@@ -59,8 +59,8 @@ export default function StockDisplay({ product, refreshInterval = 60000 }: Stock
         <Badge 
           variant={stock > 0 ? "outline" : "destructive"} 
           className={`px-2 py-1 ${stock > 0 
-            ? "border-[#CAD2C5] text-[#9D8189] bg-[#CAD2C5]/20" 
-            : "bg-[#984447] border-[#984447] text-white"}`}
+            ? "border-border bg-background/50 text-foreground" 
+            : "bg-destructive border-destructive text-destructive-foreground"}`}
         >
           {stock > 0 ? (
             <div className="flex items-center gap-1">
@@ -78,19 +78,19 @@ export default function StockDisplay({ product, refreshInterval = 60000 }: Stock
         {isLoading && (
           <span className="text-sm text-muted-foreground flex items-center gap-1">
             <Loader2 className="h-3 w-3 animate-spin" />
-            <span className="beauty-highlight">Updating...</span>
+            <span>Updating...</span>
           </span>
         )}
         
         {error && (
-          <span className="text-sm text-red-500">
+          <span className="text-sm text-destructive">
             {error}
           </span>
         )}
       </div>
       
       {stock > 0 && (
-        <span className="text-sm text-[#9D8189]">
+        <span className="text-sm text-foreground">
           {stock} {stock === 1 ? "unit" : "units"} available
         </span>
       )}
