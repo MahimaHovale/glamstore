@@ -60,16 +60,16 @@ export default function WishlistPage() {
       <div className="flex flex-col space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <Link href="/store/products" className="inline-flex items-center text-sm mb-2 text-[#9D8189] hover:text-pink-600 transition-colors">
+            <Link href="/store/products" className="inline-flex items-center text-sm mb-2 text-foreground hover:text-foreground/80 transition-colors">
               <ChevronLeft className="mr-1 h-4 w-4" />
               Back to Products
             </Link>
-            <h1 className="text-3xl font-bold tracking-tight text-[#9D8189]">My Wishlist</h1>
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">My Wishlist</h1>
           </div>
           {wishlist.length > 0 && (
             <Button 
               variant="outline" 
-              className="sm:self-end border-[#F7CAD0] text-[#9D8189] hover:bg-[#F7CAD0]/10"
+              className="sm:self-end border-border text-foreground hover:bg-accent"
               onClick={() => {
                 wishlist.forEach(item => {
                   handleAddToCart(item)
@@ -88,13 +88,13 @@ export default function WishlistPage() {
         
         {wishlist.length === 0 ? (
           <div className="flex flex-col items-center justify-center text-center py-12 sm:py-16">
-            <Heart className="h-16 w-16 text-[#F7CAD0] mb-4" />
-            <h2 className="text-xl sm:text-2xl font-semibold text-[#9D8189] mb-2">Your wishlist is empty</h2>
+            <Heart className="h-16 w-16 text-primary mb-4" />
+            <h2 className="text-xl sm:text-2xl font-semibold text-foreground mb-2">Your wishlist is empty</h2>
             <p className="text-muted-foreground max-w-md mb-8">
               Products you save to your wishlist will appear here. Discover products and save your favorites!
             </p>
             <Link href="/store/products">
-              <Button className="beauty-cta-button">
+              <Button>
                 Browse Products
               </Button>
             </Link>
@@ -111,9 +111,9 @@ export default function WishlistPage() {
                   exit={{ opacity: 0, scale: 0.9 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <Card className="group overflow-hidden h-full flex flex-col border-[#F7CAD0]/20 hover:border-[#F7CAD0]/60 hover:shadow-md transition-all">
+                  <Card className="group overflow-hidden h-full flex flex-col border-border hover:border-primary/60 hover:shadow-md transition-all rounded-xl">
                     <Link href={`/store/products/${item.id}`} className="relative">
-                      <div className="relative aspect-square overflow-hidden bg-[#FFF1F3] dark:bg-gray-800">
+                      <div className="relative aspect-square overflow-hidden bg-accent dark:bg-accent/50 rounded-t-xl">
                         {item.image ? (
                           <Image
                             src={item.image}
@@ -122,37 +122,36 @@ export default function WishlistPage() {
                             className="object-cover transition-transform duration-300 group-hover:scale-105"
                           />
                         ) : (
-                          <div className="flex h-full items-center justify-center bg-[#FFF1F3] dark:bg-gray-800">
-                            <ShoppingBag className="h-12 w-12 text-[#F7CAD0] dark:text-[#F7CAD0]/60" />
+                          <div className="flex h-full items-center justify-center bg-accent dark:bg-accent/50">
+                            <ShoppingBag className="h-12 w-12 text-primary/70 dark:text-primary/60" />
                           </div>
                         )}
                       </div>
                       <Badge 
                         variant="secondary" 
-                        className="absolute top-2 right-2 bg-white/80 backdrop-blur-sm dark:bg-black/50 hover:bg-white dark:hover:bg-black cursor-pointer"
+                        className="absolute top-2 right-2 bg-white/80 backdrop-blur-sm dark:bg-black/50 hover:bg-white dark:hover:bg-black cursor-pointer rounded-lg"
                         onClick={(e) => {
                           e.preventDefault()
                           e.stopPropagation()
                           handleRemoveFromWishlist(item.id)
                         }}
                       >
-                        <Trash2 className="h-3.5 w-3.5 text-[#984447]" />
+                        <Trash2 className="h-3.5 w-3.5 text-destructive hover:text-destructive/80" />
                       </Badge>
                     </Link>
                     <CardContent className="flex-1 p-4">
                       <div className="space-y-1">
-                        <Badge variant="outline" className="font-normal text-xs bg-[#FFE5D9]/30 text-[#9D8189] border-[#FFE5D9]">
+                        <Badge variant="outline" className="font-normal text-xs bg-accent/50 text-foreground border-border">
                           {item.category}
                         </Badge>
-                        <h3 className="font-medium text-lg line-clamp-1 text-[#9D8189]">{item.name}</h3>
+                        <h3 className="font-medium text-lg line-clamp-1 text-foreground">{item.name}</h3>
                         <p className="text-sm text-muted-foreground line-clamp-2">{item.description}</p>
                       </div>
                     </CardContent>
                     <CardFooter className="p-4 pt-0 flex items-center justify-between">
-                      <p className="font-semibold text-lg text-[#9D8189]">{formatCurrency(item.price)}</p>
+                      <p className="font-semibold text-lg text-foreground">{formatCurrency(item.price)}</p>
                       <Button
                         size="sm"
-                        className="beauty-cta-button"
                         onClick={() => handleAddToCart(item)}
                       >
                         <ShoppingBag className="h-4 w-4 mr-1" /> Add to Cart
