@@ -614,8 +614,8 @@ function PaymentPageContent() {
         )}
         {/* Show order confirmation if payment was successful and order was created */}
         {paymentStatus === 'success' && orderId ? (
-          <Card className="w-full max-w-2xl shadow-md mx-auto dark:bg-gray-800 dark:border-gray-700">
-            <CardHeader className="text-center bg-gradient-to-r from-pink-50 to-purple-50 dark:from-pink-900/20 dark:to-purple-900/20 rounded-t-lg relative pb-14 sm:pb-8">
+          <Card className="w-full max-w-2xl shadow-md mx-auto">
+            <CardHeader className="text-center bg-primary/5 rounded-t-lg relative pb-14 sm:pb-8">
               <div className="absolute top-4 right-4 flex flex-col sm:flex-row gap-2">
                 <Button 
                   onClick={() => {
@@ -638,7 +638,7 @@ function PaymentPageContent() {
                   }}
                   size="sm"
                   variant="secondary" 
-                  className="flex items-center justify-center gap-1 bg-purple-100 hover:bg-purple-200 text-purple-800 border-purple-300"
+                  className="flex items-center justify-center gap-1"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
@@ -681,34 +681,34 @@ function PaymentPageContent() {
               <div className="flex justify-center mb-4">
                 <CheckCircle className="h-14 w-14 sm:h-16 sm:w-16 text-green-500" />
               </div>
-              <CardTitle className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 dark:text-white">Order Successful!</CardTitle>
+              <CardTitle className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground">Order Successful!</CardTitle>
             </CardHeader>
             <CardContent className="text-center space-y-4 px-4 sm:px-6">
-              <p className="text-muted-foreground text-sm sm:text-base dark:text-gray-300">
+              <p className="text-muted-foreground text-sm sm:text-base">
                 Thank you for your purchase. Your order has been successfully placed and is being processed.
               </p>
               
-              <p className="font-medium text-sm sm:text-base dark:text-gray-200">
-                Order ID: <span className="font-bold break-all dark:text-white">{orderId}</span>
+              <p className="font-medium text-sm sm:text-base text-foreground">
+                Order ID: <span className="font-bold break-all">{orderId}</span>
               </p>
               
-              <p className="text-muted-foreground text-sm sm:text-base dark:text-gray-300">
+              <p className="text-muted-foreground text-sm sm:text-base">
                 You will receive an email confirmation shortly please check Spam folder in mail.
               </p>
             </CardContent>
             <CardFooter className="flex flex-col sm:flex-row gap-3 sm:gap-4 p-4 sm:p-6 justify-center">
-              <Button asChild variant="outline" className="w-full sm:w-auto dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800">
+              <Button asChild variant="outline" className="w-full sm:w-auto">
                 <Link href="/store/account">My Account</Link>
               </Button>
-              <Button asChild className="w-full sm:w-auto dark:bg-pink-600 dark:hover:bg-pink-700">
+              <Button asChild className="w-full sm:w-auto">
                 <Link href="/store">Continue Shopping</Link>
               </Button>
             </CardFooter>
           </Card>
         ) : (
-          <Card className="w-full max-w-2xl shadow-md mx-auto dark:bg-gray-800 dark:border-gray-700">
-            <CardHeader className="border-b dark:border-gray-700">
-              <CardTitle className="text-2xl font-bold text-gray-800 dark:text-white">Payment Method</CardTitle>
+          <Card className="w-full max-w-2xl shadow-md mx-auto">
+            <CardHeader className="border-b border-border">
+              <CardTitle className="text-2xl font-bold text-foreground">Payment Method</CardTitle>
             </CardHeader>
             <CardContent>
               {/* Show loading state while checking PayPal return */}
@@ -727,7 +727,7 @@ function PaymentPageContent() {
                   <p className="text-destructive font-medium">Payment Error</p>
                   <p className="text-sm">{paypalError}</p>
                   <div className="mt-3">
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-sm text-muted-foreground">
                       You can try again or select Cash on Delivery to complete your order.
                     </p>
                   </div>
@@ -744,11 +744,11 @@ function PaymentPageContent() {
                       onValueChange={(value) => setSelectedPaymentMethod(value as "paypal" | "cash_on_delivery")}
                       className="space-y-3"
                     >
-                      <div className="flex items-center space-x-2 p-3 border rounded-md hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-700 transition-colors">
-                        <RadioGroupItem value="paypal" id="paypal" className="dark:border-gray-500" />
+                      <div className="flex items-center space-x-2 p-3 border rounded-md hover:bg-accent/50 transition-colors">
+                        <RadioGroupItem value="paypal" id="paypal" />
                         <Label htmlFor="paypal" className="flex items-center cursor-pointer w-full">
-                          <span className="mr-2 font-medium dark:text-white">PayPal</span>
-                          <span className="text-blue-600 dark:text-blue-400 text-sm ml-1">(Pay securely online)</span>
+                          <span className="mr-2 font-medium text-foreground">PayPal</span>
+                          <span className="text-blue-600 text-sm ml-1">(Pay securely online)</span>
                           <div className="ml-auto">
                             <svg xmlns="http://www.w3.org/2000/svg" width="80" height="20" viewBox="0 0 124 33" className="h-6 w-auto">
                               <path fill="#253B80" d="M46.211 6.749h-6.839a.95.95 0 0 0-.939.802l-2.766 17.537a.57.57 0 0 0 .564.658h3.265a.95.95 0 0 0 .939-.803l.746-4.73a.95.95 0 0 1 .938-.803h2.165c4.505 0 7.105-2.18 7.784-6.5.306-1.89.013-3.375-.872-4.415-.97-1.142-2.694-1.746-4.985-1.746zM47 13.154c-.374 2.454-2.249 2.454-4.062 2.454h-1.032l.724-4.583a.57.57 0 0 1 .563-.481h.473c1.235 0 2.4 0 3.002.704.359.42.469 1.044.332 1.906zM66.654 13.075h-3.275a.57.57 0 0 0-.563.481l-.145.916-.229-.332c-.709-1.029-2.29-1.373-3.868-1.373-3.619 0-6.71 2.741-7.312 6.586-.313 1.918.132 3.752 1.22 5.031.998 1.176 2.426 1.666 4.125 1.666 2.916 0 4.533-1.875 4.533-1.875l-.146.91a.57.57 0 0 0 .562.66h2.95a.95.95 0 0 0 .939-.803l1.77-11.209a.568.568 0 0 0-.561-.658zm-4.565 6.374c-.316 1.871-1.801 3.127-3.695 3.127-.951 0-1.711-.305-2.199-.883-.484-.574-.668-1.391-.514-2.301.295-1.855 1.805-3.152 3.67-3.152.93 0 1.686.309 2.184.892.499.589.697 1.411.554 2.317zM84.096 13.075h-3.291a.954.954 0 0 0-.787.417l-4.539 6.686-1.924-6.425a.953.953 0 0 0-.912-.678h-3.234a.57.57 0 0 0-.541.754l3.625 10.638-3.408 4.811a.57.57 0 0 0 .465.9h3.287a.949.949 0 0 0 .781-.408l10.946-15.8a.57.57 0 0 0-.468-.895z"/>
@@ -757,13 +757,13 @@ function PaymentPageContent() {
                           </div>
                         </Label>
                       </div>
-                      <div className="flex items-center space-x-2 p-3 border rounded-md hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800 transition-colors mt-3">
-                        <RadioGroupItem value="cash_on_delivery" id="cash_on_delivery" className="dark:border-gray-600" />
+                      <div className="flex items-center space-x-2 p-3 border rounded-md hover:bg-accent/50 transition-colors mt-3">
+                        <RadioGroupItem value="cash_on_delivery" id="cash_on_delivery" />
                         <Label htmlFor="cash_on_delivery" className="flex items-center cursor-pointer w-full">
-                          <span className="font-medium dark:text-white">Cash on Delivery</span>
-                          <span className="text-gray-500 dark:text-gray-400 text-sm ml-1">(Pay when you receive)</span>
+                          <span className="font-medium text-foreground">Cash on Delivery</span>
+                          <span className="text-muted-foreground text-sm ml-1">(Pay when you receive)</span>
                           <div className="ml-auto">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-500 dark:text-gray-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
                               <rect width="20" height="12" x="2" y="6" rx="2"/>
                               <circle cx="12" cy="12" r="2"/>
                               <path d="M6 12h.01M18 12h.01"/>
@@ -775,38 +775,38 @@ function PaymentPageContent() {
                   </div>
                   
                   <div className="space-y-3 mt-6">
-                    <h3 className="font-medium text-gray-700 dark:text-gray-300">Shipping Address</h3>
+                    <h3 className="font-medium text-foreground">Shipping Address</h3>
                     {shippingAddress && (
-                      <div className="text-sm space-y-1 p-3 sm:p-4 border rounded-md bg-gray-50 dark:bg-gray-800/50 dark:border-gray-600">
-                        <p className="font-medium text-gray-800 dark:text-white">{shippingAddress.fullName}</p>
-                        <p className="break-words dark:text-gray-200">{shippingAddress.streetAddress}</p>
-                        <p className="dark:text-gray-200">
+                      <div className="text-sm space-y-1 p-3 sm:p-4 border rounded-md bg-accent/20">
+                        <p className="font-medium text-foreground">{shippingAddress.fullName}</p>
+                        <p className="break-words text-foreground">{shippingAddress.streetAddress}</p>
+                        <p className="text-foreground">
                           {shippingAddress.city}, {shippingAddress.state} {shippingAddress.postalCode}
                         </p>
-                        <p className="dark:text-gray-200">{shippingAddress.country}</p>
-                        <p className="mt-2 text-gray-600 dark:text-gray-400">Phone: {shippingAddress.phone}</p>
+                        <p className="text-foreground">{shippingAddress.country}</p>
+                        <p className="mt-2 text-muted-foreground">Phone: {shippingAddress.phone}</p>
                       </div>
                     )}
                   </div>
                   
                   <div className="space-y-3 mt-6">
-                    <h3 className="font-medium text-gray-700 dark:text-gray-300">Order Summary</h3>
-                    <div className="space-y-2 p-3 sm:p-4 border rounded-md dark:border-gray-600 dark:bg-gray-800/50">
+                    <h3 className="font-medium text-foreground">Order Summary</h3>
+                    <div className="space-y-2 p-3 sm:p-4 border rounded-md">
                       {cart.map((item) => (
                         <div key={item.product.id} className="flex justify-between items-center py-2">
                           <span className="flex items-center">
-                            <span className="inline-flex items-center justify-center bg-purple-100 dark:bg-purple-900/40 text-purple-800 dark:text-purple-300 w-5 h-5 sm:w-6 sm:h-6 rounded-full mr-2 text-xs flex-shrink-0">
+                            <span className="inline-flex items-center justify-center bg-primary/20 text-primary w-5 h-5 sm:w-6 sm:h-6 rounded-full mr-2 text-xs flex-shrink-0">
                               {item.quantity}
                             </span>
-                            <span className="truncate max-w-[120px] sm:max-w-none dark:text-gray-200">{item.product.name}</span>
+                            <span className="truncate max-w-[120px] sm:max-w-none text-foreground">{item.product.name}</span>
                           </span>
-                          <span className="font-medium ml-2 flex-shrink-0 dark:text-gray-200">{formatCurrency(item.product.price * item.quantity)}</span>
+                          <span className="font-medium ml-2 flex-shrink-0 text-foreground">{formatCurrency(item.product.price * item.quantity)}</span>
                         </div>
                       ))}
-                      <Separator className="my-3 dark:bg-gray-600" />
+                      <Separator className="my-3" />
                       <div className="flex justify-between font-medium text-base sm:text-lg pt-2">
-                        <span className="dark:text-white">Total</span>
-                        <span className="text-purple-700 dark:text-purple-400">{formatCurrency(getCartTotal())}</span>
+                        <span className="text-foreground">Total</span>
+                        <span className="text-primary">{formatCurrency(getCartTotal())}</span>
                       </div>
                     </div>
                   </div>
@@ -817,7 +817,7 @@ function PaymentPageContent() {
             <CardFooter className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-6 border-t mt-4 justify-center">
               <Button 
                 variant="outline" 
-                className="w-full sm:w-auto border-gray-300 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-800" 
+                className="w-full sm:w-auto" 
                 onClick={() => router.push('/store/checkout/shipping')}
               >
                 <ArrowLeft className="mr-2 h-4 w-4" />
@@ -827,7 +827,7 @@ function PaymentPageContent() {
               {/* For Cash on Delivery, show Place Order button */}
               {selectedPaymentMethod === "cash_on_delivery" && (
                 <Button
-                  className="w-full sm:w-auto dark:bg-pink-600 dark:hover:bg-pink-700"
+                  className="w-full sm:w-auto"
                   onClick={handleCashOnDelivery}
                   disabled={isSubmitting || !shippingAddress || cart.length === 0}
                 >
@@ -848,7 +848,7 @@ function PaymentPageContent() {
               {/* For PayPal, either show Checkout button or Complete Payment button */}
               {selectedPaymentMethod === "paypal" && !paypalOrder && (
                 <Button
-                  className="w-full sm:w-auto bg-[#0070ba] hover:bg-[#005ea6] text-white font-medium dark:bg-[#0070ba]/90 dark:hover:bg-[#005ea6]/90"
+                  className="w-full sm:w-auto bg-[#0070ba] hover:bg-[#005ea6] text-white font-medium"
                   onClick={handlePayPalCheckout}
                   disabled={isSubmitting || !shippingAddress || cart.length === 0}
                 >
@@ -869,7 +869,7 @@ function PaymentPageContent() {
               {/* Show PayPal redirect button if we have a PayPal order */}
               {paypalOrder && (
                 <Button
-                  className="w-full sm:w-auto bg-[#0070ba] hover:bg-[#005ea6] text-white font-medium shadow-md dark:bg-[#0070ba]/90 dark:hover:bg-[#005ea6]/90"
+                  className="w-full sm:w-auto bg-[#0070ba] hover:bg-[#005ea6] text-white font-medium shadow-md"
                   onClick={() => {
                     // Directly use the URL from state instead of using the handler function
                     console.log('Redirecting directly to PayPal from button click:', paypalOrder.paymentUrl);
@@ -890,7 +890,7 @@ function PaymentPageContent() {
 // Wrap the component with Suspense to fix the build error with useSearchParams()
 export default function PaymentPage() {
   return (
-    <Suspense fallback={<div className="container py-10 text-center"><Loader2 className="h-8 w-8 animate-spin mx-auto" /><p className="mt-2">Loading payment page...</p></div>}>
+    <Suspense fallback={<div className="container py-10 text-center"><Loader2 className="h-8 w-8 animate-spin mx-auto" /><p className="mt-2 text-foreground">Loading payment page...</p></div>}>
       <PaymentPageContent />
     </Suspense>
   );
