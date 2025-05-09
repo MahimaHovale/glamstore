@@ -81,9 +81,10 @@ export function StoreCarousel() {
         className="w-full"
         opts={{
           loop: true,
-          align: "start",
-          dragFree: true,
-          containScroll: "trimSnaps"
+          align: "center",
+          dragFree: false,
+          containScroll: "keepSnaps",
+          slidesToScroll: 1
         }}
       >
         <CarouselContent>
@@ -131,4 +132,4 @@ export function StoreCarousel() {
       </Carousel>
     </div>
   );
-} 
+}
