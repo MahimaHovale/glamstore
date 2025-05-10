@@ -93,13 +93,13 @@ export default async function ProductPage({ params }: { params: { id: string } }
                 className="object-cover"
               />
             </div>
-            {[1, 2, 3].map((i) => (
+            {/* {[1, 2, 3].map((i) => (
               <div key={i} className="relative aspect-square w-[100px] shrink-0 rounded-md border overflow-hidden bg-muted cursor-pointer hover:opacity-80 transition-opacity">
                 <div className="absolute inset-0 flex items-center justify-center text-muted-foreground">
                   <span className="text-xs">View {i + 1}</span>
                 </div>
               </div>
-            ))}
+            ))} */}
           </div>
         </div>
 
