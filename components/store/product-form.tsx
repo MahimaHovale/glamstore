@@ -32,6 +32,9 @@ interface GalleryImage {
 // Define the Pinata group ID for product images from environment variable
 const PRODUCT_GROUP_ID = process.env.NEXT_PUBLIC_PRODUCT_GROUP_ID || "";
 
+// Log the group ID for debugging
+console.log("Product form using group ID:", PRODUCT_GROUP_ID);
+
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
   price: z.coerce.number().min(0.01, "Price must be greater than 0"),
