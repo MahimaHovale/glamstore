@@ -39,7 +39,7 @@ export function StoreCarousel() {
       } else {
         api.scrollNext();
       }
-    }, 3750); // 3 seconds
+    }, 4000); // 4 seconds
 
     return () => {
       clearInterval(autoPlayInterval);
