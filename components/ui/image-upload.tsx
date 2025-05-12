@@ -35,10 +35,14 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
         const file = acceptedFiles[0];
         if (!file) return;
 
+        console.log("Starting image upload with group ID:", groupId);
+
         const formData = new FormData();
         formData.append("file", file);
         
+        // Always append the groupId if it exists, even if it's an empty string
         if (groupId) {
+          console.log(`Adding file to group: ${groupId}`);
           formData.append("groupId", groupId);
         }
 
