@@ -97,7 +97,7 @@ export default async function StorePage() {
                 </div>
                 <h3 className="text-lg font-medium mb-2 text-foreground">Free Shipping</h3>
                 <p className="text-sm text-muted-foreground flex-grow">
-                  Free shipping on all orders over $50
+                  Free shipping on all orders over Rs50
                 </p>
               </CardContent>
             </Card>  

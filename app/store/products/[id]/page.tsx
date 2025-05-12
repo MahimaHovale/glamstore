@@ -213,7 +213,7 @@ export default async function ProductPage({ params }: { params: { id: string } }
               <div>
                 <h3 className="text-lg font-medium mb-4">Shipping & Returns</h3>
                 <div className="space-y-4">
-                  <p className="text-sm">Free standard shipping on orders over $50</p>
+                  <p className="text-sm">Free standard shipping on orders over Rs50</p>
                   <p className="text-sm">Express shipping available for an additional fee</p>
                   <p className="text-sm">30-day return policy for unused items in original packaging</p>
                 </div>

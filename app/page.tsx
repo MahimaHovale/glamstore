@@ -185,15 +185,15 @@ export default async function Home() {
                 </div>
                 <h3 className="font-medium">Free Shipping</h3>
                 <p className="text-sm text-muted-foreground">On orders over Rs50</p>
-            </div>
-            
+              </div>
+              
               <div className="flex flex-col items-center text-center space-y-2">
                 <div className="flex h-12 w-12 items-center justify-center rounded-full bg-pink-100">
                   <ShieldCheck className="h-5 w-5 text-pink-600" />
-                        </div>
+                </div>
                 <h3 className="font-medium">Secure Payment</h3>
                 <p className="text-sm text-muted-foreground">100% secure transactions</p>
-                    </div>
+              </div>
               
               <div className="flex flex-col items-center text-center space-y-2">
                 <div className="flex h-12 w-12 items-center justify-center rounded-full bg-pink-100">
@@ -201,8 +201,8 @@ export default async function Home() {
                 </div>
                 <h3 className="font-medium">Quality Guarantee</h3>
                 <p className="text-sm text-muted-foreground">Tested and approved</p>
-            </div>
-            
+              </div>
+              
               <div className="flex flex-col items-center text-center space-y-2">
                 <div className="flex h-12 w-12 items-center justify-center rounded-full bg-pink-100">
                   <Heart className="h-5 w-5 text-pink-600" />
@@ -227,7 +227,7 @@ export default async function Home() {
                 <li><Link href="#" className="text-sm text-muted-foreground hover:text-pink-600">Careers</Link></li>
                 <li><Link href="#" className="text-sm text-muted-foreground hover:text-pink-600">Press</Link></li>
               </ul>
-              </div>
+            </div>
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-pink-600">Help</h3>
               <ul className="space-y-2">
