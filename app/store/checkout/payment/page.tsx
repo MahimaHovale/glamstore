@@ -530,8 +530,8 @@ function PaymentPageContent() {
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <div>
-              <div><strong>userid:</strong> mahima.example.personal.co</div>
-              <div><strong>pass:</strong> mahiam27</div>
+              <div><strong>userid:</strong> mahima@personal.example.com </div>
+              <div><strong>pass:</strong> mahima27 </div>
             </div>
             <TooltipProvider>
               <Tooltip>
