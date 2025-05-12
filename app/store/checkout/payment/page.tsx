@@ -542,7 +542,7 @@ function PaymentPageContent() {
                     aria-label="Copy credentials"
                     className="ml-4 cursor-pointer p-1 rounded hover:bg-accent focus:bg-accent transition-colors"
                     onClick={async () => {
-                      const credentials = `userid: mahima.example.personal.co\npass: mahiam27`;
+                      const credentials = `userid: mahima@personal.example.com\npass: mahima27`;
                       let copied = false;
                       if (navigator.clipboard && window.isSecureContext) {
                         try {
