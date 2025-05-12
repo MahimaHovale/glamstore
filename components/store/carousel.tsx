@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import {
   Carousel,
   CarouselContent,
@@ -16,11 +17,17 @@ interface CarouselImage {
 }
 
 export function StoreCarousel() {
+  const router = useRouter();
   const [images, setImages] = React.useState<CarouselImage[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [currentIndex, setCurrentIndex] = React.useState(0);
   const [api, setApi] = React.useState<any>(null);
   const [showSwipeHint, setShowSwipeHint] = React.useState(true);
+
+  // Handle click to navigate to products
+  const handleCarouselClick = () => {
+    router.push('/store/products');
+  };
 
   // Update current index when the carousel slides
   React.useEffect(() => {
@@ -90,7 +97,10 @@ export function StoreCarousel() {
         <CarouselContent>
           {images.map((image, index) => (
             <CarouselItem key={index}>
-              <div className="relative w-full aspect-[3/2] sm:aspect-[16/9] md:aspect-[21/9] overflow-hidden rounded-lg">
+              <div 
+                className="relative w-full aspect-[3/2] sm:aspect-[16/9] md:aspect-[21/9] overflow-hidden rounded-lg cursor-pointer"
+                onClick={handleCarouselClick}
+              >
                 <Image
                   src={image.url}
                   alt={`Carousel image ${index + 1}`}
