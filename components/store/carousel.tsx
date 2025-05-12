@@ -29,6 +29,23 @@ export function StoreCarousel() {
     router.push('/store/products');
   };
 
+  // Auto-play functionality
+  React.useEffect(() => {
+    if (!api || !images.length) return;
+
+    const autoPlayInterval = setInterval(() => {
+      if (currentIndex === images.length - 1) {
+        api.scrollTo(0);
+      } else {
+        api.scrollNext();
+      }
+    }, 3750); // 3 seconds
+
+    return () => {
+      clearInterval(autoPlayInterval);
+    };
+  }, [api, currentIndex, images.length]);
+
   // Update current index when the carousel slides
   React.useEffect(() => {
     if (!api) return;
