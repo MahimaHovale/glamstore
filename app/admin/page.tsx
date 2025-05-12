@@ -248,7 +248,7 @@ export default function AdminDashboardPage() {
                         <div className="flex justify-between items-start">
                           <div>
                             <p className="font-medium text-sm truncate">{customer?.name || "Unknown"}</p>
-                            <p className="text-xs text-muted-foreground truncate">{order.id}</p>
+                            {/* Order ID removed from mobile view */}
                           </div>
                           <Badge className={cn(getStatusBadge(order.status))}>
                             {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
