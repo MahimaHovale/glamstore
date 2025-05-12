@@ -57,6 +57,9 @@ export type Order = {
   products: { productId: string; quantity: number }[];
   status: "pending" | "processing" | "shipped" | "delivered";
   total: number;
+  subtotal?: number;
+  shipping?: number;
+  tax?: number;
   createdAt: string;
   shippingAddress?: {
     fullName: string;
@@ -110,6 +113,9 @@ export interface OrderDocument extends Document {
   products: OrderProductItem[];
   status: "pending" | "processing" | "shipped" | "delivered";
   total: number;
+  subtotal?: number;
+  shipping?: number;
+  tax?: number;
   createdAt: Date;
   shippingAddress?: {
     fullName: string;
@@ -284,6 +290,9 @@ function convertOrder(doc: any): Order | null {
         : [],
       status: doc.status || 'pending',
       total: Number(doc.total) || 0,
+      subtotal: doc.subtotal ? Number(doc.subtotal) : undefined,
+      shipping: doc.shipping ? Number(doc.shipping) : undefined,
+      tax: doc.tax ? Number(doc.tax) : undefined,
       createdAt: doc.createdAt instanceof Date 
         ? doc.createdAt.toISOString() 
         : (typeof doc.createdAt === 'string' ? doc.createdAt : new Date().toISOString()),

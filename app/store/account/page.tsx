@@ -109,112 +109,116 @@ export default function AccountPage() {
 
   return (
     <AuthGuard>
-      <div className="container py-8">
-        <h1 className="text-3xl font-bold mb-6">My Account</h1>
+      <div className="p-4 md:p-6 space-y-6">
+        <div className="flex flex-col gap-4">
+          <h1 className="text-2xl md:text-3xl font-bold">My Account</h1>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="mb-6">
-            <TabsTrigger value="profile">Profile</TabsTrigger>
-            <TabsTrigger value="orders">Orders</TabsTrigger>
-          </TabsList>
+          <Tabs defaultValue="profile" className="w-full">
+            <TabsList className="mb-4">
+              <TabsTrigger value="profile">Profile</TabsTrigger>
+              <TabsTrigger value="orders">Orders</TabsTrigger>
+            </TabsList>
 
-          <TabsContent value="profile">
-            <Card className="border-0 shadow-none">
-              <CardHeader>
-                <CardTitle>Profile Information</CardTitle>
-                <CardDescription>Manage your account details</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="clerk-profile-wrapper">
-                  <style jsx global>{`
-                    .clerk-profile-wrapper > div,
-                    .clerk-profile-wrapper > div > div,
-                    .clerk-profile-wrapper > div > div > div {
-                      width: 100% !important;
-                      max-width: 100% !important;
-                    }
-                    @media (max-width: 768px) {
-                      .clerk-profile-wrapper {
-                        display: flex;
-                        justify-content: center;
+            <TabsContent value="profile">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Profile Information</CardTitle>
+                  <CardDescription>Manage your account details</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="clerk-profile-wrapper">
+                    <style jsx global>{`
+                      .clerk-profile-wrapper > div,
+                      .clerk-profile-wrapper > div > div,
+                      .clerk-profile-wrapper > div > div > div {
+                        width: 100% !important;
+                        max-width: 100% !important;
                       }
-                      .cl-card {
-                        padding: 1rem !important;
-                        margin: 0 !important;
+                      @media (max-width: 768px) {
+                        .clerk-profile-wrapper {
+                          display: flex;
+                          justify-content: center;
+                        }
+                        .cl-card {
+                          padding: 1rem !important;
+                          margin: 0 !important;
+                        }
+                        .cl-navbar-menu {
+                          padding: 0 !important;
+                        }
                       }
-                      .cl-navbar-menu {
-                        padding: 0 !important;
-                      }
-                    }
-                  `}</style>
-                  <UserProfile routing="hash" />
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+                    `}</style>
+                    <UserProfile routing="hash" />
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
 
-          <TabsContent value="orders">
-            <Card>
-              <CardHeader>
-                <CardTitle>Order History</CardTitle>
-                <CardDescription>View your past orders and their status</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {isLoading ? (
-                  <div className="flex items-center justify-center py-6">
-                    <Loader2 className="h-6 w-6 animate-spin mr-2" />
-                    <p>Loading your orders...</p>
-                  </div>
-                ) : error ? (
-                  <div className="text-center py-6">
-                    <p className="text-destructive mb-4">{error}</p>
-                    <Button onClick={() => window.location.reload()}>Try Again</Button>
-                  </div>
-                ) : orders.length === 0 ? (
-                  <div className="text-center py-6">
-                    <p className="text-muted-foreground mb-4">You haven't placed any orders yet.</p>
-                    <Link href="/store/products">
-                      <Button>Start Shopping</Button>
-                    </Link>
-                  </div>
-                ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr className="border-b">
-                          <th className="text-left font-medium p-2">Order ID</th>
-                          <th className="text-left font-medium p-2">Date</th>
-                          <th className="text-left font-medium p-2">Status</th>
-                          <th className="text-right font-medium p-2">Total</th>
-                          <th className="text-right font-medium p-2">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {orders.map((order) => (
-                          <tr key={order.id} className="border-b">
-                            <td className="p-2">{order.id}</td>
-                            <td className="p-2">{formatDate(order.createdAt)}</td>
-                            <td className="p-2">
-                              <Badge className={getStatusColor(order.status)} variant="outline">
-                                {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                              </Badge>
-                            </td>
-                            <td className="p-2 text-right">{formatCurrency(order.total)}</td>
-                            <td className="p-2 text-right">
-                              <Button variant="outline" size="sm">
-                                View
-                              </Button>
-                            </td>
+            <TabsContent value="orders">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Order History</CardTitle>
+                  <CardDescription>View your past orders and their status</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {isLoading ? (
+                    <div className="flex items-center justify-center py-6">
+                      <Loader2 className="h-6 w-6 animate-spin mr-2" />
+                      <p>Loading your orders...</p>
+                    </div>
+                  ) : error ? (
+                    <div className="text-center py-6">
+                      <p className="text-destructive mb-4">{error}</p>
+                      <Button onClick={() => window.location.reload()}>Try Again</Button>
+                    </div>
+                  ) : orders.length === 0 ? (
+                    <div className="text-center py-6">
+                      <p className="text-muted-foreground mb-4">You haven't placed any orders yet.</p>
+                      <Link href="/store/products">
+                        <Button>Start Shopping</Button>
+                      </Link>
+                    </div>
+                  ) : (
+                    <div className="overflow-x-auto -mx-6">
+                      <table className="w-full">
+                        <thead>
+                          <tr className="border-b">
+                            <th className="text-left font-medium p-4">Order ID</th>
+                            <th className="text-left font-medium p-4">Date</th>
+                            <th className="text-left font-medium p-4">Status</th>
+                            <th className="text-right font-medium p-4">Total</th>
+                            <th className="text-right font-medium p-4">Actions</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+                        </thead>
+                        <tbody>
+                          {orders.map((order) => (
+                            <tr key={order.id} className="border-b">
+                              <td className="p-4 max-w-[150px] truncate">{order.id}</td>
+                              <td className="p-4">{formatDate(order.createdAt)}</td>
+                              <td className="p-4">
+                                <Badge className={`w-fit ${getStatusColor(order.status)}`}>
+                                  {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                                </Badge>
+                              </td>
+                              <td className="p-4 text-right">{formatCurrency(order.total)}</td>
+                              <td className="p-4 text-right">
+                                <Button variant="outline" size="sm" asChild>
+                                  <Link href={`/store/orders/${order.id}`}>
+                                    View
+                                  </Link>
+                                </Button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </div>
       </div>
     </AuthGuard>
   )
