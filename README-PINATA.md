@@ -1,6 +1,6 @@
 # Pinata Integration for BeautyStore
 
-This document explains how Pinata is integrated into the BeautyStore project for content and image storages.
+This document explains how Pinata is integrated into the BeautyStore project for content and image storage.
 
 ## Overview
 
