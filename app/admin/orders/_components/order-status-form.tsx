@@ -66,7 +66,8 @@ export function OrderStatusForm({ orderId, currentStatus, onClose }: OrderStatus
       })
       
       if (!response.ok) {
-        throw new Error('Failed to update order status')
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.error || 'Failed to update order status');
       }
       
       toast.success('Order status updated successfully')
@@ -74,7 +75,7 @@ export function OrderStatusForm({ orderId, currentStatus, onClose }: OrderStatus
       if (onClose) onClose()
     } catch (error) {
       console.error("Error updating order status:", error)
-      toast.error('Failed to update order status')
+      toast.error(error instanceof Error ? error.message : 'Failed to update order status')
     } finally {
       setIsSubmitting(false)
     }

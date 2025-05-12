@@ -3,9 +3,18 @@ import { db } from "@/lib/db"
 import connectDB from "@/lib/mongodb"
 import { Order } from "@/lib/db"
 
-export async function GET(request: Request) {
+interface RouteParams {
+  params: {
+    id: string;
+  };
+}
+
+export async function GET(request: Request, { params }: RouteParams) {
   try {
     await connectDB(); // Ensure connection is established
+    
+    // Get the ID from params
+    const { id } = await params;
     
     // Check if we need to filter by userId
     const url = new URL(request.url);
@@ -38,8 +47,11 @@ export async function GET(request: Request) {
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: Request, { params }: RouteParams) {
   try {
+    // Get the ID from params
+    const { id } = await params;
+    
     const body = await request.json();
     
     // Log request body for debugging
@@ -166,5 +178,68 @@ export async function POST(request: Request) {
       error: "Internal server error", 
       details: error instanceof Error ? error.message : String(error)
     }, { status: 500 });
+  }
+}
+
+export async function PUT(request: Request, { params }: RouteParams) {
+  try {
+    // Await params before destructuring
+    const { id } = await params;
+    
+    if (!id) {
+      return NextResponse.json(
+        { error: 'Order ID is required' },
+        { status: 400 }
+      );
+    }
+    
+    const body = await request.json();
+    
+    // Validate status is provided
+    if (!body.status) {
+      return NextResponse.json(
+        { error: 'Status is required' },
+        { status: 400 }
+      );
+    }
+    
+    // Validate status is one of the allowed values
+    const validStatuses = ["pending", "processing", "shipped", "delivered"];
+    if (!validStatuses.includes(body.status)) {
+      return NextResponse.json(
+        { error: 'Invalid status value' },
+        { status: 400 }
+      );
+    }
+    
+    // Find the order first
+    await connectDB();
+    const order = await db.getOrder(id);
+    
+    if (!order) {
+      return NextResponse.json(
+        { error: 'Order not found' },
+        { status: 404 }
+      );
+    }
+    
+    // Update the order status
+    // Use type assertion to handle the updateOrderStatus method
+    const updatedOrder = await (db as any).updateOrderStatus(id, body.status);
+    
+    if (!updatedOrder) {
+      return NextResponse.json(
+        { error: 'Failed to update order status' },
+        { status: 500 }
+      );
+    }
+    
+    return NextResponse.json(updatedOrder);
+  } catch (error) {
+    console.error('Error updating order status:', error);
+    return NextResponse.json(
+      { error: 'Failed to update order status' },
+      { status: 500 }
+    );
   }
 }
