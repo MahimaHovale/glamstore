@@ -9,13 +9,14 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { ArrowRight, ArrowLeft, Truck, Loader2, CheckCircle, Check } from "lucide-react";
+import { ArrowRight, ArrowLeft, Truck, Loader2, CheckCircle, Check, ClipboardCopy } from "lucide-react";
 import { useCart } from "@/lib/cart-provider";
 import { formatCurrency } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { downloadInvoice, printInvoice } from "@/lib/invoice-generator";
 import Image from "next/image";
 import Link from "next/link";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface PayPalOrder {
   id: string;
@@ -523,6 +524,66 @@ function PaymentPageContent() {
   
   // Handle PayPal checkout button click
   const handlePayPalCheckout = async () => {
+    toast({
+      title: "Please use these credentials for payment",
+      description: (
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <div>
+              <div><strong>userid:</strong> mahima.example.personal.co</div>
+              <div><strong>pass:</strong> mahiam27</div>
+            </div>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span
+                    role="button"
+                    tabIndex={0}
+                    aria-label="Copy credentials"
+                    className="ml-4 cursor-pointer p-1 rounded hover:bg-accent focus:bg-accent transition-colors"
+                    onClick={async () => {
+                      const credentials = `userid: mahima.example.personal.co\npass: mahiam27`;
+                      let copied = false;
+                      if (navigator.clipboard && window.isSecureContext) {
+                        try {
+                          await navigator.clipboard.writeText(credentials);
+                          copied = true;
+                        } catch {}
+                      }
+                      if (!copied) {
+                        // fallback for mobile/unsupported
+                        const textarea = document.createElement("textarea");
+                        textarea.value = credentials;
+                        textarea.style.position = "fixed";
+                        textarea.style.left = "-9999px";
+                        document.body.appendChild(textarea);
+                        textarea.focus();
+                        textarea.select();
+                        try {
+                          document.execCommand("copy");
+                          copied = true;
+                        } catch {}
+                        document.body.removeChild(textarea);
+                      }
+                      toast({
+                        title: "Copied!",
+                        description: "Credentials copied to clipboard",
+                        duration: 2000,
+                      });
+                    }}
+                  >
+                    <ClipboardCopy className="w-5 h-5 text-muted-foreground hover:text-primary transition-colors" />
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent>Copy credentials</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+        </div>
+      ),
+      variant: "default",
+      duration: 10000,
+    });
     try {
       setIsSubmitting(true);
       
