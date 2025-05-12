@@ -298,13 +298,13 @@ export default function AdminCustomersPage() {
             <RefreshCw className="mr-2 h-4 w-4" />
             Sync Users
           </Button>
-          <Button 
+          {/* <Button 
             onClick={() => setIsAddDialogOpen(true)} 
             className="flex items-center justify-center"
           >
             <UserPlus className="mr-2 h-4 w-4" />
             Add Customer
-          </Button>
+          </Button> */}
         </div>
       </div>
 
@@ -339,10 +339,10 @@ export default function AdminCustomersPage() {
                         <div className="flex justify-between items-start">
                           <div className="mr-2 flex-1">
                             <h3 className="font-medium text-sm truncate">{customer.name}</h3>
-                            <p className="text-xs text-muted-foreground flex items-center truncate">
+                            {/* <p className="text-xs text-muted-foreground flex items-center truncate">
                               <Mail className="h-3 w-3 mr-1 flex-shrink-0" />
                               <span className="truncate">{customer.email}</span>
-                            </p>
+                            </p> */}
                           </div>
                           <div className="bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-1.5 py-0.5 rounded-full text-xs font-medium flex items-center justify-center flex-shrink-0">
                             <span className="tabular-nums">{customerOrders.length}</span>
@@ -444,7 +444,7 @@ export default function AdminCustomersPage() {
         </CardContent>
       </Card>
       
-      {/* Add Customer Dialog */}
+      {/* Add Customer Dialog
       <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
         <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
@@ -453,7 +453,7 @@ export default function AdminCustomersPage() {
           <CustomerForm onClose={handleDialogClose} />
         </DialogContent>
       </Dialog>
-      
+       */}
       {/* Delete Customer Dialog */}
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
