@@ -1,14 +1,31 @@
 import { PinataSDK } from "pinata";
 
+// Debug: Log environment variables (partial for security)
+const pinataJwt = process.env.PINATA_JWT || "";
+const pinataGateway = process.env.NEXT_PUBLIC_GATEWAY_URL || "";
+
+console.log("Pinata Config:", {
+  jwtAvailable: !!pinataJwt,
+  jwtPrefix: pinataJwt.substring(0, 20) + "...",
+  gateway: pinataGateway
+});
+
 // Initialize Pinata SDK with environment variables
 export const pinata = new PinataSDK({
-  pinataJwt: process.env.PINATA_JWT || "",
-  pinataGateway: process.env.NEXT_PUBLIC_GATEWAY_URL || "",
+  pinataJwt,
+  pinataGateway,
 });
 
 // Upload file to Pinata and return CID
 export const uploadToPinata = async (file: File, groupId?: string) => {
   try {
+    console.log("Starting Pinata upload with:", {
+      fileName: file.name,
+      fileSize: file.size,
+      fileType: file.type,
+      groupId
+    });
+
     const formData = new FormData();
     formData.append("file", file);
     
@@ -18,18 +35,23 @@ export const uploadToPinata = async (file: File, groupId?: string) => {
     formData.append("pinataMetadata", metadata);
     
     // Create upload instance
+    console.log("Creating Pinata upload request...");
     let uploadRequest = pinata.upload.public.file(file);
     
     // Add to group if groupId is provided
     if (groupId) {
+      console.log(`Adding to group: ${groupId}`);
       uploadRequest = uploadRequest.group(groupId);
     }
     
     // Execute the upload
+    console.log("Executing Pinata upload...");
     const upload = await uploadRequest;
+    console.log("Pinata upload successful:", upload);
     
     // SDK returns cid in the response
     const gatewayUrl = createGatewayUrl(upload.cid);
+    console.log("Generated gateway URL:", gatewayUrl);
     
     return {
       success: true,
@@ -39,6 +61,14 @@ export const uploadToPinata = async (file: File, groupId?: string) => {
     };
   } catch (error) {
     console.error("Error uploading to Pinata:", error);
+    // More detailed error logging
+    if (error instanceof Error) {
+      console.error("Error details:", {
+        message: error.message,
+        stack: error.stack,
+        name: error.name
+      });
+    }
     return {
       success: false,
       error: error instanceof Error ? error.message : "Unknown error"
@@ -74,14 +104,23 @@ export const getFromPinata = async (cid: string) => {
 // Create gateway URL for file - synchronous function for consistent URL formatting
 export function createGatewayUrl(cid: string): string {
   // Ensure the CID is properly formatted
-  if (!cid) return "/placeholder.svg";
+  if (!cid) {
+    console.warn("createGatewayUrl called with empty CID, returning placeholder");
+    return "/placeholder.svg";
+  }
   
   // Get gateway domain from environment variable
   const gateway = process.env.NEXT_PUBLIC_GATEWAY_URL || '';
   
+  if (!gateway) {
+    console.warn("NEXT_PUBLIC_GATEWAY_URL is not set or empty");
+  }
+  
   // Format: https://{gateway-domain}/ipfs/{CID}
   // This is the standard format for Pinata gateways as per docs
-  return `https://${gateway}/ipfs/${cid}`;
+  const url = `https://${gateway}/ipfs/${cid}`;
+  console.log(`Created gateway URL for CID ${cid}: ${url}`);
+  return url;
 }
 
 // Update file metadata in Pinata
