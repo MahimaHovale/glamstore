@@ -43,7 +43,14 @@ export function StoreLayout({ children }: StoreLayoutProps) {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  const navigation = [
+  // Define separate navigation arrays for desktop and mobile
+  const desktopNavigation = [
+    { name: "Home", href: "/store", icon: Home },
+    { name: "Products", href: "/store/products", icon: ShoppingBag },
+    { name: "Account", href: "/store/account", icon: User },
+  ]
+  
+  const mobileNavigation = [
     { name: "Home", href: "/store", icon: Home },
     { name: "Products", href: "/store/products", icon: ShoppingBag },
     { name: "Image Search", href: "/store/image-search", icon: Camera },
@@ -65,8 +72,8 @@ export function StoreLayout({ children }: StoreLayoutProps) {
             : "bg-white dark:bg-gray-900"
         )}
       >
-        <div className="container px-4 mx-auto">
-          <div className="flex h-16 items-center justify-between">
+        <div className="container px-2 sm:px-4 mx-auto">
+          <div className="flex h-16 items-center justify-between overflow-hidden">
             {/* Logo */}
             <div className="flex items-center">
               <Link href="/store" className="flex items-center">
@@ -75,8 +82,8 @@ export function StoreLayout({ children }: StoreLayoutProps) {
             </div>
 
             {/* Desktop Navigation - Centered */}
-            <nav className="hidden md:flex items-center justify-center space-x-12 flex-1 ml-24">
-              {navigation.map((item) => (
+            <nav className="hidden md:flex items-center justify-center space-x-4 lg:space-x-8 xl:space-x-12 flex-1 ml-4 lg:ml-12 xl:ml-24">
+              {desktopNavigation.map((item) => (
                 <Link
                   key={item.name}
                   href={item.href}
@@ -108,7 +115,7 @@ export function StoreLayout({ children }: StoreLayoutProps) {
                       type="search" 
                       name="search"
                       placeholder="Search products..." 
-                      className="w-[200px] pl-8 rounded-l-full border-muted focus:border-pink-300 focus:ring-pink-200 dark:border-gray-700 dark:focus:border-pink-800 dark:focus:ring-pink-900" 
+                      className="w-[150px] xl:w-[200px] pl-8 rounded-l-full border-muted focus:border-pink-300 focus:ring-pink-200 dark:border-gray-700 dark:focus:border-pink-800 dark:focus:ring-pink-900" 
                     />
                   </form>
                   <Link href="/store/image-search">
@@ -229,12 +236,12 @@ export function StoreLayout({ children }: StoreLayoutProps) {
                     <Menu className="h-6 w-6" />
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="right" className="w-[80vw] sm:w-[350px] p-0 flex flex-col">
+                <SheetContent side="right" className="w-[85vw] sm:w-[350px] p-0 flex flex-col">
                   <SheetHeader className="border-b p-4 flex items-center justify-center">
                     <SheetTitle className="text-xl font-bold">Menu</SheetTitle>
                   </SheetHeader>
                   <div className="flex-1 overflow-y-auto">
-                    <div className="p-6">
+                    <div className="p-4 sm:p-6">
                       <form className="relative mb-6" onSubmit={(e) => {
                         e.preventDefault();
                         const searchInput = e.currentTarget.querySelector('input');
@@ -247,13 +254,15 @@ export function StoreLayout({ children }: StoreLayoutProps) {
                           }
                         }
                       }}>
-                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input 
-                          type="search" 
-                          name="search"
-                          placeholder="Search products..." 
-                          className="w-full pl-8 rounded-full border-muted bg-muted/50" 
-                        />
+                        <div className="relative w-full">
+                          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                          <Input 
+                            type="search" 
+                            name="search"
+                            placeholder="Search products..." 
+                            className="w-full pl-8 rounded-full border-muted bg-muted/50" 
+                          />
+                        </div>
                       </form>
                     </div>
                     
@@ -261,7 +270,7 @@ export function StoreLayout({ children }: StoreLayoutProps) {
                     <div className="mb-6">
                       <h3 className="text-sm font-medium text-muted-foreground mb-3 px-3">Main Menu</h3>
                       <nav className="grid gap-1">
-                        {navigation.map((item) => (
+                        {mobileNavigation.map((item) => (
                           <SheetClose asChild key={item.name}>
                             <Link
                               href={item.href}
