@@ -3,11 +3,10 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { db } from "@/lib/db"
 import { formatCurrency, getBestSellingProducts } from "@/lib/utils"
-import { ArrowRight, ShoppingBag, Star, TrendingUp, Heart, Award } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
+import { ArrowRight, ShoppingBag, TrendingUp, Heart } from "lucide-react"
+import { Card, CardContent } from "@/components/ui/card"
 import { StoreCarousel } from "@/components/store/carousel"
-import ProductCard from "@/components/store/product-card"
+import { BestsellersSection } from "@/components/store/bestsellers-section"
 
 // Product interface definition
 interface Product {
@@ -20,12 +19,12 @@ interface Product {
 }
 
 export default async function StorePage() {
-  // Fetch products and orders
+  // Fetch products and orders for initial server-side rendering
   const allProducts = await db.getProducts();
   const allOrders = await db.getOrders();
   
-  // Get best-selling products
-  const bestSellerProducts = getBestSellingProducts(allOrders, allProducts, 8);
+  // Get best-selling products for initial render
+  const initialBestSellerProducts = getBestSellingProducts(allOrders, allProducts, 8);
 
   return (
     <div className="flex flex-col">
@@ -34,38 +33,8 @@ export default async function StorePage() {
         <StoreCarousel />
       </section>
 
-      {/* Best Seller Products */}
-      <section className="w-full py-16 md:py-24 bg-background">
-        <div className="container px-4 mx-auto">
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-12">
-            <div className="space-y-3">
-              <Badge variant="outline" className="border-border bg-background/80 text-foreground">
-                <Award className="mr-1 h-3.5 w-3.5 text-foreground" />
-                Best Sellers
-              </Badge>
-              <h2 className="text-3xl font-bold tracking-tighter md:text-4xl text-foreground">Most Popular Products</h2>
-              <p className="max-w-[600px] text-muted-foreground">
-                Our customers' favorites and most frequently purchased beauty products
-              </p>
-            </div>
-            <Link href="/store/products" className="mt-4 md:mt-0">
-              <Button variant="link" className="gap-1 text-foreground hover:text-foreground/80">
-                View All Products <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
-          </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {bestSellerProducts.map((product) => (
-              <ProductCard 
-                key={product.id} 
-                product={product}
-                isBestSeller={true} 
-              />
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Best Seller Products - Dynamic Section */}
+      <BestsellersSection initialProducts={initialBestSellerProducts} />
 
       {/* Why Choose Us Section */}
       <section className="w-full py-16 md:py-24">
