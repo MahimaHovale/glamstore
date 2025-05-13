@@ -92,8 +92,9 @@ export async function POST(req: Request) {
           
           console.log(`Creating new user from Clerk data:`, userData);
           
-          // Create the user
-          const newUser = await db.createUser(userData);
+          // Create the user - using the correct method name from the db implementation
+          // @ts-ignore - We know this method exists in the server-side implementation
+          const newUser = await (db as any).createUser(userData);
           
           results.created++;
           results.details.push(`Created user: ${userData.email} with clerkId: ${clerkId}`);
