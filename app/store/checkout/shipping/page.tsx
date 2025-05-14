@@ -262,12 +262,12 @@ export default function ShippingPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 {cart.map((item) => (
-                  <div key={item.product.id} className="flex justify-between items-center">
-                    <div className="flex items-center">
-                      <div className="mr-2 font-medium">{item.quantity}x</div>
-                      <div>{item.product.name}</div>
+                  <div key={item.product.id} className="flex justify-between items-start">
+                    <div className="flex items-start max-w-[70%]">
+                      <div className="mr-2 font-medium flex-shrink-0">{item.quantity}x</div>
+                      <div className="break-words">{item.product.name}</div>
                     </div>
-                    <div>{formatCurrency(item.product.price * item.quantity)}</div>
+                    <div className="ml-2 flex-shrink-0">{formatCurrency(item.product.price * item.quantity)}</div>
                   </div>
                 ))}
                 

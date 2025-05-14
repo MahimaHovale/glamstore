@@ -511,12 +511,12 @@ export default function ConfirmationPage() {
                 <h3 className="font-medium mb-2 text-sm sm:text-base dark:text-gray-300">Items ({cart.length})</h3>
                 <div className="space-y-3">
                   {cart.map((item) => (
-                    <div key={item.product.id} className="flex justify-between items-center py-2">
-                      <div className="flex items-center">
-                        <div className="inline-flex items-center justify-center bg-purple-100 dark:bg-purple-900/40 text-purple-800 dark:text-purple-300 w-5 h-5 sm:w-6 sm:h-6 rounded-full mr-2 text-xs flex-shrink-0">
+                    <div key={item.product.id} className="flex justify-between items-start py-2">
+                      <div className="flex items-start max-w-[70%]">
+                        <div className="inline-flex items-center justify-center bg-purple-100 dark:bg-purple-900/40 text-purple-800 dark:text-purple-300 w-5 h-5 sm:w-6 sm:h-6 rounded-full mr-2 text-xs flex-shrink-0 mt-0.5">
                           {item.quantity}
                         </div>
-                        <div className="truncate max-w-[120px] sm:max-w-none text-sm sm:text-base dark:text-gray-200">{item.product.name}</div>
+                        <div className="break-words text-sm sm:text-base dark:text-gray-200">{item.product.name}</div>
                       </div>
                       <div className="font-medium ml-2 flex-shrink-0 text-sm sm:text-base dark:text-gray-200">{formatCurrency(item.product.price * item.quantity)}</div>
                     </div>

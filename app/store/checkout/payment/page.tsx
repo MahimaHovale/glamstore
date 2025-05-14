@@ -854,13 +854,13 @@ function PaymentPageContent() {
                     <h3 className="font-medium text-foreground">Order Summary</h3>
                     <div className="space-y-2 p-3 sm:p-4 border rounded-md">
                       {cart.map((item) => (
-                        <div key={item.product.id} className="flex justify-between items-center py-2">
-                          <span className="flex items-center">
-                            <span className="inline-flex items-center justify-center bg-primary/20 text-primary w-5 h-5 sm:w-6 sm:h-6 rounded-full mr-2 text-xs flex-shrink-0">
+                        <div key={item.product.id} className="flex justify-between items-start py-2">
+                          <div className="flex items-start max-w-[70%]">
+                            <span className="inline-flex items-center justify-center bg-primary/20 text-primary w-5 h-5 sm:w-6 sm:h-6 rounded-full mr-2 text-xs flex-shrink-0 mt-0.5">
                               {item.quantity}
                             </span>
-                            <span className="truncate max-w-[120px] sm:max-w-none text-foreground">{item.product.name}</span>
-                          </span>
+                            <span className="break-words text-foreground">{item.product.name}</span>
+                          </div>
                           <span className="font-medium ml-2 flex-shrink-0 text-foreground">{formatCurrency(item.product.price * item.quantity)}</span>
                         </div>
                       ))}
