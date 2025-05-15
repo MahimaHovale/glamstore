@@ -398,6 +398,11 @@ export function StoreLayout({ children }: StoreLayoutProps) {
                   </Link>
                 </li>
                 <li>
+                  <Link href="/store/about" className="text-sm text-muted-foreground hover:text-pink-600 transition-colors duration-200">
+                    About Us
+                  </Link>
+                </li>
+                <li>
                   <Link href="/store/wishlist" className="text-sm text-muted-foreground hover:text-pink-600 transition-colors duration-200">
                     Wishlist
                   </Link>

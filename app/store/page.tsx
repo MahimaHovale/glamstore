@@ -44,6 +44,13 @@ export default async function StorePage() {
             <p className="max-w-[600px] mx-auto mt-3 text-muted-foreground">
               We're committed to providing you with the best beauty products and experience
             </p>
+            <div className="mt-6">
+              <Link href="/store/about">
+                <Button className="bg-pink-600 hover:bg-pink-700 text-white">
+                  About Us
+                </Button>
+              </Link>
+            </div>
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
