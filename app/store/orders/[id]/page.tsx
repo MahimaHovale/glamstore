@@ -135,7 +135,7 @@ export default function OrderDetailsPage() {
 
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-semibold">Order #{order.id}</h1>
+            <h1 className="text-2xl font-semibold">Order <span className="break-all">{`#${order.id}`}</span></h1>
             <p className="text-sm text-muted-foreground">
               Placed on {formatDate(order.createdAt)}
             </p>
@@ -210,7 +210,9 @@ export default function OrderDetailsPage() {
                 {order.products?.map((item, index) => (
                   <tr key={index} className="border-b">
                     <td className="p-2">
-                      <p className="font-medium">Product ID: {item.productId}</p>
+                      <p className="font-medium">
+                        Product ID: <span className="break-all md:break-normal overflow-hidden text-ellipsis">{item.productId}</span>
+                      </p>
                     </td>
                     <td className="p-2 text-center">{item.quantity}</td>
                     <td className="p-2 text-right">{formatCurrency(order.total / order.products.length)}</td>
