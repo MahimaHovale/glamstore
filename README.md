@@ -4,11 +4,6 @@ GlamStore is a comprehensive e-commerce platform dedicated to beauty products, f
 
 ![GlamStore](/public/homepage.png)
 
-> **Note:** The above image is a placeholder. To add your own website screenshot:
-> 1. Take a screenshot of your running application
-> 2. Save it as `glamstore-screenshot.jpg` in the `/public/images/` directory
-> 3. Update this README to use that path: `![GlamStore](/public/images/glamstore-screenshot.jpg)`
-
 **Live Demo:** [GlamStore](https://glamstore.vercel.app)
 
 ## 🌟 Features
