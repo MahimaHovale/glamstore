@@ -2,7 +2,14 @@
 
 GlamStore is a comprehensive e-commerce platform dedicated to beauty products, featuring both customer-facing storefronts and an admin dashboard for complete management of the online store.
 
-![GlamStore](glamstore.vercel.app) <!-- Add your store screenshot URL here -->
+![GlamStore](/public/homepage.png)
+
+> **Note:** The above image is a placeholder. To add your own website screenshot:
+> 1. Take a screenshot of your running application
+> 2. Save it as `glamstore-screenshot.jpg` in the `/public/images/` directory
+> 3. Update this README to use that path: `![GlamStore](/public/images/glamstore-screenshot.jpg)`
+
+**Live Demo:** [GlamStore](https://glamstore.vercel.app)
 
 ## 🌟 Features
 
@@ -157,7 +164,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 **Mahima Hovale**
 
-## 🙏 Acknowledgements
+## Acknowledgements
 
 - [Next.js](https://nextjs.org/)
 - [React](https://reactjs.org/)
