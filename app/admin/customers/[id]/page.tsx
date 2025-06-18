@@ -190,13 +190,13 @@ export default function CustomerDetailPage() {
             Back to Customers
           </Button>
         </div>
-        <div className="text-sm text-muted-foreground">
+{/*         <div className="text-sm text-muted-foreground">
           {customer.clerkId && (
             <div className="flex items-center">
               <span>Clerk ID: {customer.clerkId}</span>
             </div>
           )}
-        </div>
+        </div> */}
       </div>
 
       <div className="grid md:grid-cols-3 gap-6">
