@@ -269,7 +269,7 @@ export default function CustomerDetailPage() {
                         </td>
                         <td className="p-2">{order.createdAt ? formatDate(order.createdAt) : 'N/A'}</td>
                         <td className="p-2 text-right">
-                          Rs{order.total ? order.total.toFixed(2) : '0.00'}
+                          ₹ {order.total ? order.total.toFixed(2) : '0.00'}
                         </td>
                         <td className="p-2 text-right">
                           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
